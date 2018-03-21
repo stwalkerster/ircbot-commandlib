@@ -7,7 +7,6 @@
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
-    using Stwalkerster.Extensions;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
@@ -69,7 +68,7 @@
             var message = string.Format(
                 "The flags currently available to {0} are: {1}",
                 this.User,
-                flagsForUser.Implode(string.Empty));
+                string.Join(string.Empty, flagsForUser));
 
             yield return new CommandResponse { Message = message };
         }

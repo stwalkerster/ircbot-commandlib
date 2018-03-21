@@ -12,7 +12,6 @@
     using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
     using Stwalkerster.Bot.CommandLib.Exceptions;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
-    using Stwalkerster.Extensions;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
@@ -324,7 +323,7 @@
                                    IgnoreRedirection = true
                                };
 
-            return response.ToEnumerable();
+            return new List<CommandResponse> {response};
         }
 
         /// <summary>

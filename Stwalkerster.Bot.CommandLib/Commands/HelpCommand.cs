@@ -9,9 +9,7 @@
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Exceptions;
     using Stwalkerster.Bot.CommandLib.Model;
-    using Stwalkerster.Bot.CommandLib.Services;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
-    using Stwalkerster.Extensions;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
@@ -97,12 +95,14 @@
 
             if (command == null)
             {
-                return
+                return new List<CommandResponse>
+                {
                     new CommandResponse
-                        {
-                            Message = "The specified command could not be found.", 
-                            Destination = CommandResponseDestination.PrivateMessage
-                        }.ToEnumerable();
+                    {
+                        Message = "The specified command could not be found.",
+                        Destination = CommandResponseDestination.PrivateMessage
+                    }
+                };
             }
 
             var helpResponses = command.HelpMessage(key).ToList();

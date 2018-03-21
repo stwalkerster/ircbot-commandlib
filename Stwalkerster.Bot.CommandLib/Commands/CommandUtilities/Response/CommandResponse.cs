@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Stwalkerster.Extensions;
     using Stwalkerster.IrcClient.Extensions;
 
     /// <summary>
@@ -62,7 +61,7 @@
             {
                 if (!this.IgnoreRedirection && this.RedirectionTarget != null && this.RedirectionTarget.Any())
                 {
-                    message = string.Format("{0}: {1}", this.RedirectionTarget.Implode(", "), message);
+                    message = string.Format("{0}: {1}", string.Join(", ", this.RedirectionTarget), message);
                 }
             }
 

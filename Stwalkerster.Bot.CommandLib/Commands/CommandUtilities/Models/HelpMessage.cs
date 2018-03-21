@@ -3,7 +3,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
-    using Stwalkerster.Extensions;
 
     /// <summary>
     /// The help message.
@@ -25,7 +24,7 @@
         /// The text.
         /// </param>
         public HelpMessage(string commandName, string syntax, string text)
-            : this(commandName, syntax.ToEnumerable(), text.ToEnumerable())
+            : this(commandName, new List<string> {syntax}, new List<string> {text})
         {
         }
 
@@ -42,7 +41,7 @@
         /// The text.
         /// </param>
         public HelpMessage(string commandName, IEnumerable<string> syntax, string text)
-            : this(commandName, syntax, text.ToEnumerable())
+            : this(commandName, syntax, new List<string> {text})
         {
         }
 
@@ -59,7 +58,7 @@
         /// The text.
         /// </param>
         public HelpMessage(string commandName, string syntax, IEnumerable<string> text)
-            : this(commandName, syntax.ToEnumerable(), text)
+            : this(commandName, new List<string> {syntax}, text)
         {
         }
 
