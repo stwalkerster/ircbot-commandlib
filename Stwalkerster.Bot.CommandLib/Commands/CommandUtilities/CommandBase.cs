@@ -115,7 +115,14 @@
         {
             get
             {
-                return this.GetType().GetAttribute<CommandFlagAttribute>().Flag;
+                var attribute = this.GetType().GetAttribute<CommandFlagAttribute>();
+
+                if (attribute == null)
+                {
+                    return null;
+                }
+                
+                return attribute.Flag;
             }
         }
 
@@ -232,15 +239,13 @@
                         this.Logger.Info("Command executed with missing arguments.");
 
                         var responses = new List<CommandResponse>
-                                            {
-                                                new CommandResponse
-                                                    {
-                                                        Destination =
-                                                            CommandResponseDestination
-                                                            .Default,
-                                                        Message = e.Message
-                                                    }
-                                            };
+                        {
+                            new CommandResponse
+                            {
+                                Destination = CommandResponseDestination.Default,
+                                Message = e.Message
+                            }
+                        };
 
                         responses.AddRange(this.HelpMessage(e.HelpKey));
 
@@ -251,15 +256,26 @@
                         this.Logger.Warn("Command encountered an issue during execution.", e);
 
                         return new List<CommandResponse>
-                                   {
-                                       new CommandResponse
-                                           {
-                                               Destination =
-                                                   CommandResponseDestination
-                                                   .Default,
-                                               Message = e.Message
-                                           }
-                                   };
+                        {
+                            new CommandResponse
+                            {
+                                Destination = CommandResponseDestination.Default,
+                                Message = e.Message
+                            }
+                        };
+                    }
+                    catch (Exception e)
+                    {
+                        this.Logger.Error("Unhandled exception during command execution", e);
+                        
+                        return new List<CommandResponse>
+                        {
+                            new CommandResponse
+                            {
+                                Destination = CommandResponseDestination.Default,
+                                Message = "Unhandled exception during command execution."
+                            }
+                        };
                     }
                 }
 

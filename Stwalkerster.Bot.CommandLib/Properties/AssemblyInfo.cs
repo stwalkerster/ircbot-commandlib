@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitle("Stwalkerster.Bot.CommandLib")]
 [assembly: AssemblyDescription("An IRC Bot command library")]
@@ -11,3 +12,4 @@
 
 [assembly: AssemblyVersion("0.0.0.0")]
 [assembly: AssemblyFileVersion("0.0.0.0")]
+[assembly: InternalsVisibleTo("Stwalkerster.Bot.CommandLib.Tests")]

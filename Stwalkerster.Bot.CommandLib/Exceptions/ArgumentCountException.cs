@@ -46,6 +46,11 @@
             this.HelpKey = helpKey;
         }
 
+        public ArgumentCountException() : base("Insufficient arguments to command.")
+        {
+            this.HelpKey = null;
+        }
+
         #endregion
 
         #region Public Properties
