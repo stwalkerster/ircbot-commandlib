@@ -1,12 +1,10 @@
-﻿namespace Stwalkerster.Bot.CommandLib.Commands.CommandUtilities
+﻿namespace Stwalkerster.Bot.CommandLib.Services
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using Castle.Core.Logging;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
-    using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
-    using Stwalkerster.Bot.CommandLib.Services;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;

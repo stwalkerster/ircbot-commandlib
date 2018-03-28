@@ -43,7 +43,10 @@
         IUser User { get; }
 
         /// <summary>
-        /// The commandCompletedSemaphore.
+        /// Gets the command Completed Semaphore.
+        /// <para>
+        /// This semaphore can be set with <code>CommandCompletedSemaphore.WaitOne()</code> to suspend destruction of the command for a maximum of thirty seconds.
+        /// </para>
         /// </summary>
         Semaphore CommandCompletedSemaphore { get; }
 
@@ -71,10 +74,10 @@
         IEnumerable<CommandResponse> HelpMessage(string helpKey = null);
 
         /// <summary>
-        /// The run.
+        /// Runs the command
         /// </summary>
         /// <returns>
-        /// The <see cref="bool"/>.
+        /// The <see cref="IEnumerable{CommandResponse}"/>.
         /// </returns>
         IEnumerable<CommandResponse> Run();
 

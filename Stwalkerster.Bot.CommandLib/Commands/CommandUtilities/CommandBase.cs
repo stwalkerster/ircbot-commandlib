@@ -71,17 +71,10 @@
 
         public bool Executed { get; private set; }
 
-        /// <summary>
-        /// Gets the command Completed Semaphore.
-        /// <para>
-        /// This semaphore can be set with <code>CommandCompletedSemaphore.WaitOne()</code> to suspend destruction of the command for a maximum of thirty seconds.
-        /// </para>
-        /// </summary>
+        /// <inheritdoc />
         public Semaphore CommandCompletedSemaphore { get; private set; }
 
-        /// <summary>
-        /// Gets the arguments to the command.
-        /// </summary>
+        /// <inheritdoc />
         public IEnumerable<string> Arguments { get; private set; }
 
         protected IFlagService FlagService { get; private set; }
@@ -103,14 +96,10 @@
             }
         }
 
-        /// <summary>
-        /// Gets the source (where the command was triggered).
-        /// </summary>
+        /// <inheritdoc />
         public string CommandSource { get; private set; }
 
-        /// <summary>
-        /// Gets the flag required to execute.
-        /// </summary>
+        /// <inheritdoc />
         public string Flag
         {
             get
@@ -126,19 +115,13 @@
             }
         }
 
-        /// <summary>
-        /// Gets or sets the original arguments.
-        /// </summary>
+        /// <inheritdoc />
         public IEnumerable<string> OriginalArguments { get; set; }
 
-        /// <summary>
-        /// Gets or sets the redirection target.
-        /// </summary>
+        /// <inheritdoc />
         public IEnumerable<string> RedirectionTarget { get; set; }
 
-        /// <summary>
-        /// Gets the user who triggered the command.
-        /// </summary>
+        /// <inheritdoc />
         public IUser User { get; private set; }
 
         #endregion
@@ -156,26 +139,13 @@
 
         #region Public Methods and Operators
 
-        /// <summary>
-        /// Returns true if the command can be executed.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
+        /// <inheritdoc />
         public virtual bool CanExecute()
         {
             return this.FlagService.UserHasFlag(this.User, this.Flag);
         }
 
-        /// <summary>
-        /// The help message.
-        /// </summary>
-        /// <param name="helpKey">
-        /// The help Key.
-        /// </param>
-        /// <returns>
-        /// The <see cref="IEnumerable{CommandResponse}"/>.
-        /// </returns>
+        /// <inheritdoc />
         public IEnumerable<CommandResponse> HelpMessage(string helpKey = null)
         {
             var helpMessages = this.Help();
@@ -201,12 +171,7 @@
             return help;
         }
 
-        /// <summary>
-        /// The run.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="IEnumerable{CommandResponse}"/>.
-        /// </returns>
+        /// <inheritdoc />
         public IEnumerable<CommandResponse> Run()
         {
             if (this.Executed)

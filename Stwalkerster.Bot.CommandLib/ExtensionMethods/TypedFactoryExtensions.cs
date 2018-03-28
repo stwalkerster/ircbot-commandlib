@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
     using Stwalkerster.Bot.CommandLib.TypedFactories;
     using Stwalkerster.IrcClient.Model.Interfaces;

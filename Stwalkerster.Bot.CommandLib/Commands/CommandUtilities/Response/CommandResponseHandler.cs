@@ -76,9 +76,11 @@
         /// </param>
         public void Respond(string message)
         {
-            var cr = new CommandResponse();
-            cr.Destination = CommandResponseDestination.Default;
-            cr.Message = message;
+            var cr = new CommandResponse
+            {
+                Destination = CommandResponseDestination.Default,
+                Message = message
+            };
 
             this.responses.Add(cr);
         }
@@ -94,9 +96,11 @@
         /// </param>
         public void Respond(string message, CommandResponseDestination destination)
         {
-            var cr = new CommandResponse();
-            cr.Destination = destination;
-            cr.Message = message;
+            var cr = new CommandResponse
+            {
+                Destination = destination,
+                Message = message
+            };
 
             this.responses.Add(cr);
         }

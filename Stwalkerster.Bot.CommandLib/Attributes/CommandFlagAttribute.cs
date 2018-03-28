@@ -5,7 +5,7 @@
     /// <summary>
     /// The command flag attribute.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Class)]
     public class CommandFlagAttribute : Attribute
     {
         #region Constructors and Destructors
