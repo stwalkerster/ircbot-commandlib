@@ -20,14 +20,12 @@
 
                 // Factories
                 Component.For<ICommandTypedFactory>().AsFactory(),
-                
+
                 // Services
                 Classes.FromAssemblyContaining<CommandParser>()
                     .InSameNamespaceAs<CommandParser>()
-                    .WithServiceAllInterfaces(),
-                Component.For<ICommandHandler>().ImplementedBy<CommandHandler>());
-            
-
+                    .WithServiceAllInterfaces()
+            );
         }
     }
 }
