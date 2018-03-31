@@ -7,7 +7,6 @@
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
     using Stwalkerster.Bot.CommandLib.Services;
-    using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.TypedFactories;
 
     public class Installer : IWindsorInstaller
