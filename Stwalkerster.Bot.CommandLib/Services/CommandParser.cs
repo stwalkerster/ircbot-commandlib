@@ -165,7 +165,7 @@
                     var command = this.commandFactory.CreateType(commandType, destination, user, arguments);
 
                     command.RedirectionTarget = redirectionResult.Target;
-                    command.OriginalArguments = originalArguments;
+                    command.OriginalArguments = commandMessage.ArgumentList;
                     command.InvokedAs = commandName;
 
                     return command;

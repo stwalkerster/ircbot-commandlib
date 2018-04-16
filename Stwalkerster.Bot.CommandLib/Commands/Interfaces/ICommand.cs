@@ -30,7 +30,7 @@
         /// <summary>
         /// Gets or sets the original arguments.
         /// </summary>
-        IEnumerable<string> OriginalArguments { get; set; }
+        string OriginalArguments { get; set; }
 
         /// <summary>
         /// Gets or sets the redirection target.

@@ -119,7 +119,7 @@
         }
 
         /// <inheritdoc />
-        public IEnumerable<string> OriginalArguments { get; set; }
+        public string OriginalArguments { get; set; }
 
         /// <inheritdoc />
         public IEnumerable<string> RedirectionTarget { get; set; }
