@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Command\TestCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\BasicFlagService.cs" />
     <Compile Include="Service\ConfigurationProvider.cs" />

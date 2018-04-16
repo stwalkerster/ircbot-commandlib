@@ -36,6 +36,11 @@
         /// Gets or sets the redirection target.
         /// </summary>
         IEnumerable<string> RedirectionTarget { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the name under which the command was invoked.
+        /// </summary>
+        string InvokedAs { get; set; }
 
         /// <summary>
         /// Gets the user who triggered the command.

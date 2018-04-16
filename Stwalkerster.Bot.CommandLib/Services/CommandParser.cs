@@ -166,6 +166,7 @@
 
                     command.RedirectionTarget = redirectionResult.Target;
                     command.OriginalArguments = originalArguments;
+                    command.InvokedAs = commandName;
 
                     return command;
                 }

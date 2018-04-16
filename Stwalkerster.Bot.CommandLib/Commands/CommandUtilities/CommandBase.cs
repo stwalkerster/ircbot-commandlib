@@ -76,6 +76,9 @@
 
         /// <inheritdoc />
         public IEnumerable<string> Arguments { get; private set; }
+        
+        /// <inheritdoc />
+        public string InvokedAs { get; set; }
 
         protected IFlagService FlagService { get; private set; }
 
