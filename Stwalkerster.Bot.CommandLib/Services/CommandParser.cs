@@ -377,12 +377,36 @@
             this.commands[commandName].Add(new CommandRegistration(channel, implementation), implementation);
             this.logger.DebugFormat("Registered command {0}", implementation.FullName);
         }
-       
-        #endregion
 
-        #region Private Methods
+        public void UnregisterCommand(string commandName)
+        {
+            this.UnregisterCommand(commandName, null);
+        }
+        
+        public void UnregisterCommand(string commandName, string channel)
+        {
+            if (!this.commands.ContainsKey(commandName))
+            {
+                return;
+            }
 
-        private Type GetRegisteredCommand(string commandName, string destination)
+            var cr = new CommandRegistration(channel, null);
+            
+            var registrations = this.commands[commandName];
+            if (!registrations.ContainsKey(cr))
+            {
+                return;
+            }
+
+            registrations.Remove(cr);
+        }
+
+        public Type GetRegisteredCommand(string commandName)
+        {
+            return this.GetRegisteredCommand(commandName, null);
+        }
+        
+        public Type GetRegisteredCommand(string commandName, string destination)
         {
             Dictionary<CommandRegistration, Type> commandRegistrationSet;
             if (!this.commands.TryGetValue(commandName, out commandRegistrationSet))
@@ -391,12 +415,15 @@
                 return null;
             }
 
-            var channelRegistration = commandRegistrationSet.Keys.FirstOrDefault(x => x.Channel == destination);
-
-            if (channelRegistration != null)
+            if (destination != null)
             {
-                // This command is defined locally in this channel
-                return commandRegistrationSet[channelRegistration];
+                var channelRegistration = commandRegistrationSet.Keys.FirstOrDefault(x => x.Channel == destination);
+
+                if (channelRegistration != null)
+                {
+                    // This command is defined locally in this channel
+                    return commandRegistrationSet[channelRegistration];
+                }
             }
 
             var globalRegistration = commandRegistrationSet.Keys.FirstOrDefault(x => x.Channel == null);

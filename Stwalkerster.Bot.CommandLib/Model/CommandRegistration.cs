@@ -4,7 +4,6 @@
 
     internal class CommandRegistration
     {
-        /// <summary>Initializes a new instance of the <see cref="T:CommandRegistration" /> class.</summary>
         public CommandRegistration(string channel, Type type)
         {
             this.Channel = channel;
@@ -14,5 +13,23 @@
         public string Channel { get; private set; }
 
         public Type Type { get; private set; }
+
+        protected bool Equals(CommandRegistration other)
+        {
+            return string.Equals(this.Channel, other.Channel);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((CommandRegistration) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (this.Channel != null ? this.Channel.GetHashCode() : 0);
+        }
     }
 }

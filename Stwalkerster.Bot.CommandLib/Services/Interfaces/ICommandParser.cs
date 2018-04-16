@@ -90,5 +90,13 @@
         /// The channel to limit this registration to
         /// </param>
         void RegisterCommand(string commandName, Type implementation, string channel);
+
+        void UnregisterCommand(string commandName);
+        
+        void UnregisterCommand(string commandName, string channel);
+
+        Type GetRegisteredCommand(string commandName);
+        
+        Type GetRegisteredCommand(string commandName, string destination);
     }
 }
