@@ -23,7 +23,7 @@
             container.AddFacility<TypedFactoryFacility>();
             
             container.Install(
-                new Startup.Installer()
+                new Stwalkerster.Bot.CommandLib.Startup.Installer()
             );
             
             string ns = "Stwalkerster.Bot.CommandLib.Testbot";
