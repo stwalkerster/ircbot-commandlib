@@ -22,7 +22,7 @@
         {
             yield return new CommandResponse
             {
-                Message = "Ohai there. Invoked as " + this.InvokedAs
+                Message = "Ohai there " + this.User + " in " + this.CommandSource
             };
         }
     }

@@ -1,7 +1,6 @@
 ﻿namespace Stwalkerster.Bot.CommandLib.Services
 {
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using Castle.Core.Logging;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -65,7 +64,7 @@
         /// </param>
         public void OnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            if (e.Message.Command != "PRIVMSG")
+            if (e.IsNotice)
             {
                 return;
             }
@@ -84,17 +83,16 @@
         {
             var eventArgs = (MessageReceivedEventArgs)state;
 
-            var parameters = eventArgs.Message.Parameters.ToList();
             IIrcClient client = eventArgs.Client;
 
-            string message = parameters[1];
+            string message = eventArgs.Message;
 
             var commandMessage = this.commandParser.ParseCommandMessage(message, client.Nickname);
 
             var command = this.commandParser.GetCommand(
                 commandMessage,
-                client.LookupUser(eventArgs.Message.Prefix),
-                parameters[0],
+                eventArgs.User,
+                eventArgs.Target,
                 client);
 
             if (command == null)
