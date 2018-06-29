@@ -63,7 +63,7 @@
         /// </returns>
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var flagsForUser = this.FlagService.GetFlagsForUser(this.User);
+            var flagsForUser = this.FlagService.GetFlagsForUser(this.User, this.CommandSource);
 
             var message = string.Format(
                 "The flags currently available to {0} are: {1}",

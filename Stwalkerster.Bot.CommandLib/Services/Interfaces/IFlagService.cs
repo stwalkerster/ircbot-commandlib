@@ -5,7 +5,7 @@
 
     public interface IFlagService
     {
-        bool UserHasFlag(IUser user, string flag);
-        IEnumerable<string> GetFlagsForUser(IUser user);
+        bool UserHasFlag(IUser user, string flag, string locality);
+        IEnumerable<string> GetFlagsForUser(IUser user, string locality);
     }
 }

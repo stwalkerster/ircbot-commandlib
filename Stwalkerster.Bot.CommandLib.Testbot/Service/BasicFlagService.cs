@@ -6,7 +6,7 @@
 
     public class BasicFlagService : IFlagService
     {
-        public bool UserHasFlag(IUser user, string flag) { return true; }
-        public IEnumerable<string> GetFlagsForUser(IUser user) { return new[] {"A", "D", "P", "O", "B", "C"}; }
+        public bool UserHasFlag(IUser user, string flag, string locality) { return true; }
+        public IEnumerable<string> GetFlagsForUser(IUser user, string locality) { return new[] {"O", "S"}; }
     }
 }

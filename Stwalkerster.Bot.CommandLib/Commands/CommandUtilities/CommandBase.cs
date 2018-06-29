@@ -145,7 +145,7 @@
         /// <inheritdoc />
         public virtual bool CanExecute()
         {
-            return this.FlagService.UserHasFlag(this.User, this.Flag);
+            return this.FlagService.UserHasFlag(this.User, this.Flag, this.CommandSource);
         }
 
         /// <inheritdoc />
