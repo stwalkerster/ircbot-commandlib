@@ -66,9 +66,10 @@
             var flagsForUser = this.FlagService.GetFlagsForUser(this.User, this.CommandSource);
 
             var message = string.Format(
-                "The flags currently available to {0} are: {1}",
+                "The flags currently available to {0}{2} are: {1}",
                 this.User,
-                string.Join(string.Empty, flagsForUser));
+                string.Join(string.Empty, flagsForUser),
+                this.CommandSource.StartsWith("#") ? " in " + this.CommandSource : "");
 
             yield return new CommandResponse { Message = message };
         }
