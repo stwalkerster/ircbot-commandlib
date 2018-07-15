@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="ee9edbe4-8fcf-4795-9e43-62fd19280782" xsi:noNamespaceSchemaLocation="http://www.jetbrains.com/teamcity/schemas/2018.1/project-config.xsd">
   <name>Stwalkerster.Bot.CommandLib</name>
-  <description />
+  <description>IRC Bot Command Library</description>
   <settings>
     <options>
       <option name="buildNumberPattern" value="%version%.%build.counter%" />
