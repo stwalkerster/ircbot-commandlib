@@ -1,10 +1,12 @@
 ﻿namespace Stwalkerster.Bot.CommandLib.Testbot.Command
 {
+    using System;
     using System.Collections.Generic;
     using Castle.Core.Logging;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
+    using Stwalkerster.Bot.CommandLib.Exceptions;
     using Stwalkerster.Bot.CommandLib.Model;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
@@ -33,7 +35,12 @@
         {
         }
 
-       // [Help("", "Says hi to the user")]
+        protected override void OnPreRun()
+        {
+            throw new CommandErrorException("must be in channel!");
+        }
+
+        // [Help("", "Says hi to the user")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             yield return new CommandResponse

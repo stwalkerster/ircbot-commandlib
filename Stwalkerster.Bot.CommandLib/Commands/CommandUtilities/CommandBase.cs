@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
-    using System.Runtime.InteropServices;
     using System.Threading;
     using Castle.Core.Internal;
     using Castle.Core.Logging;
@@ -97,8 +96,15 @@
             return attr == null ? this.GetGlobalFlag() : attr.Flag;
         }
 
-        protected abstract IEnumerable<CommandResponse> Execute();
+        protected virtual IEnumerable<CommandResponse> Execute()
+        {
+            throw new CommandInvocationException();
+        }
 
+        protected virtual void OnPreRun()
+        {
+        }
+        
         public IEnumerable<CommandResponse> Run()
         {
             if (this.Executed)
@@ -155,6 +161,8 @@
 
                 try
                 {
+                    this.OnPreRun();
+                    
                     var commandResponses = (IEnumerable<CommandResponse>) subCommandMethod.Invoke(this, null);
 
                     commandResponses = commandResponses ?? new List<CommandResponse>();
@@ -166,26 +174,47 @@
 
                     return responses;
                 }
-                catch (TargetInvocationException e) when (e.InnerException is CommandInvocationException)
+                catch (Exception e) when (
+                    (e is TargetInvocationException && e.InnerException is CommandInvocationException)
+                    || e is CommandInvocationException)
                 {
                     this.Logger.Info("Command encountered an issue from invocation.");
 
-                    return this.HelpMessage(((CommandInvocationException) e.InnerException).HelpKey);
+                    if (e is TargetInvocationException)
+                    {
+                        e = e.InnerException;
+                    }
+
+                    return this.HelpMessage(((CommandInvocationException) e).HelpKey);
                 }
-                catch (TargetInvocationException e) when (e.InnerException is ArgumentCountException)
+                catch (Exception e) when (
+                    (e is TargetInvocationException && e.InnerException is ArgumentCountException)
+                    || e is ArgumentCountException)
                 {
-                    return this.AlertArgumentCount((ArgumentCountException) e.InnerException);
+                    if (e is TargetInvocationException)
+                    {
+                        e = e.InnerException;
+                    }
+                    
+                    return this.AlertArgumentCount((ArgumentCountException) e);
                 }
-                catch (TargetInvocationException e) when (e.InnerException is CommandExecutionException)
+                catch (Exception e) when (
+                    (e is TargetInvocationException && e.InnerException is CommandExecutionException)
+                    || e is CommandExecutionException)
                 {
-                    this.Logger.Warn("Command encountered an issue during execution.", e.InnerException);
+                    if (e is TargetInvocationException)
+                    {
+                        e = e.InnerException;
+                    }
+                    
+                    this.Logger.Warn("Command encountered an issue during execution.", e);
 
                     return new List<CommandResponse>
                     {
                         new CommandResponse
                         {
                             Destination = CommandResponseDestination.Default,
-                            Message = e.InnerException.Message
+                            Message = e.Message
                         }
                     };
                 }
@@ -384,7 +413,6 @@
             return null;
         }
 
-        [Obsolete]
         protected virtual IDictionary<string, HelpMessage> Help()
         {
             return new Dictionary<string, HelpMessage>();
