@@ -43,8 +43,8 @@
                 throw new ArgumentCountException();
             }
 
-            string commandName = this.Arguments.ElementAt(0);
-            string key = this.Arguments.Count > 1 ? this.Arguments.ElementAt(1) : null;
+            var commandName = this.Arguments.ElementAt(0);
+            var key = this.Arguments.Count > 1 ? this.Arguments.ElementAt(1) : null;
 
             var command = this.commandParser.GetCommand(
                 new CommandMessage ( commandName ), 
