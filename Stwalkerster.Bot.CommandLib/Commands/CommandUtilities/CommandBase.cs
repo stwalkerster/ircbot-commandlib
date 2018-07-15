@@ -297,13 +297,10 @@
                     continue;
                 }
 
-                var attr = info.GetAttribute<SubcommandInvocationAttribute>();
-                if (attr == null)
-                {
-                    continue;
-                }
+                var attrs = info.GetAttributes<SubcommandInvocationAttribute>();
 
-                if (attr.CommandName.ToLower() != this.Arguments.First())
+                var attr = attrs?.FirstOrDefault(x => x.CommandName.ToLower() == this.Arguments.First().ToLower());
+                if (attr == null)
                 {
                     continue;
                 }

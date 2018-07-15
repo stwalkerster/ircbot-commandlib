@@ -37,10 +37,8 @@
 
         protected override void OnPreRun()
         {
-            throw new CommandErrorException("must be in channel!");
         }
 
-        // [Help("", "Says hi to the user")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             yield return new CommandResponse
@@ -51,6 +49,7 @@
 
         [Help(new[] {"<user>"}, new[] {"says bye angrilly"})]
         [SubcommandInvocation("bye")]
+        [SubcommandInvocation("bar")]
         [CommandFlag(Flag.Owner)]
         [RequiredArguments(2)]
         protected IEnumerable<CommandResponse> RunBye()
