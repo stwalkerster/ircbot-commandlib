@@ -1,12 +1,14 @@
 ﻿namespace Stwalkerster.Bot.CommandLib.Tests.Commands.CommandUtilities
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
     using Moq;
     using Moq.Protected;
     using NUnit.Framework;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
+    using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Exceptions;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
@@ -141,6 +143,10 @@
             this.flags.Setup(x => x.UserHasFlag(It.IsAny<IUser>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(true);
             commandBaseMock.Protected().Setup("OnCompleted").Verifiable();
+            
+            commandBaseMock.Protected()
+                .Setup<IEnumerable<CommandResponse>>("Execute")
+                .Returns(new List<CommandResponse>());
 
             // act
             commandBaseMock.Object.Run();
