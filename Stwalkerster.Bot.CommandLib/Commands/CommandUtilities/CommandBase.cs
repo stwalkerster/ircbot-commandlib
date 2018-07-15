@@ -90,12 +90,6 @@
         protected ILogger Logger { get; }
         protected IIrcClient Client { get; }
 
-        private string GetLocalFlag(MethodInfo locality)
-        {
-            var attr = locality.GetAttribute<CommandFlagAttribute>();
-            return attr == null ? this.GetGlobalFlag() : attr.Flag;
-        }
-
         protected virtual IEnumerable<CommandResponse> Execute()
         {
             throw new CommandInvocationException();
@@ -115,7 +109,7 @@
             try
             {
                 // Test global access for this command
-                if (!this.FlagService.UserHasFlag(this.User, this.GetGlobalFlag(), this.CommandSource))
+                if (!this.AllowedMainCommand())
                 {
                     this.Logger.InfoFormat("Access denied command-globally for user {0}", this.User);
 
@@ -143,10 +137,7 @@
                 }
                 
                 // Test local access for this command
-                if (!this.FlagService.UserHasFlag(
-                        this.User,
-                        this.GetLocalFlag(subCommandMethod),
-                        this.CommandSource))
+                if (!this.AllowedSubcommand(subCommandMethod))
                 {
                     this.Logger.InfoFormat("Access denied subcommand-locally for user {0}", this.User);
 
@@ -331,13 +322,49 @@
                 .GetMethod("Execute", BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic);
         }
 
-        private string GetGlobalFlag()
+        private bool AllowedMainCommand()
         {
-            var attribute = this.GetType().GetAttribute<CommandFlagAttribute>();
+            var flagAttributes = this.GetType().GetAttributes<CommandFlagAttribute>();
+            foreach (var attribute in flagAttributes)
+            {
+                var result = this.FlagService.UserHasFlag(
+                    this.User,
+                    attribute.Flag,
+                    attribute.GlobalOnly ? null : this.CommandSource);
 
-            return attribute?.Flag;
+                if (result)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
+        private bool AllowedSubcommand(MethodInfo info)
+        {
+            var flagAttributes = info.GetAttributes<CommandFlagAttribute>().ToList();
+            foreach (var attribute in flagAttributes)
+            {
+                var result = this.FlagService.UserHasFlag(
+                    this.User,
+                    attribute.Flag,
+                    attribute.GlobalOnly ? null : this.CommandSource);
+
+                if (result)
+                {
+                    return true;
+                }
+            }
+
+            if (!flagAttributes.Any())
+            {
+                return this.AllowedMainCommand();
+            }
+
+            return false;
+        }
+        
         /// <inheritdoc />
         public IEnumerable<CommandResponse> HelpMessage(string helpKey = null)
         {
@@ -365,7 +392,7 @@
                     continue;
                 }
 
-                if (this.FlagService.UserHasFlag(this.User, this.GetLocalFlag(info), this.CommandSource))
+                if (this.AllowedSubcommand(info))
                 {
                     var cmdName = invokAttr == null ? string.Empty : invokAttr.CommandName;
                     helpMessages.Add(cmdName, helpAttr.HelpMessage);

@@ -47,11 +47,9 @@
             };
         }
 
-        [Help(new[] {"<user>"}, new[] {"says bye angrilly"})]
         [SubcommandInvocation("bye")]
-        [SubcommandInvocation("bar")]
-        [CommandFlag(Flag.Owner)]
-        [RequiredArguments(2)]
+        [CommandFlag("A", true)]
+        [CommandFlag("B")]
         protected IEnumerable<CommandResponse> RunBye()
         {
             yield return new CommandResponse
