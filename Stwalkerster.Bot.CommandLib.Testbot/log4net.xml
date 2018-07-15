@@ -26,4 +26,8 @@
         <level value="DEBUG" />
         <appender-ref ref="ConsoleAppender" />
     </root>
+    
+    <logger name="Stwalkerster.IrcClient.IrcClient.TestClient.NetworkClient">
+        <level value="WARN" />
+    </logger>
 </log4net>

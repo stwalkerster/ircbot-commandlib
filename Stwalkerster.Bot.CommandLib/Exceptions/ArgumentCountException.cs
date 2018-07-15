@@ -40,8 +40,7 @@
         /// The help Key.
         /// </param>
         public ArgumentCountException(int expectedCount, int actualCount, string helpKey)
-            : base(
-                string.Format("Insufficient arguments to command. Expected {0}, got {1}.", expectedCount, actualCount))
+            : base($"Insufficient arguments to command. Expected {expectedCount}, got {actualCount}.")
         {
             this.HelpKey = helpKey;
         }
@@ -58,7 +57,7 @@
         /// <summary>
         /// Gets the help key.
         /// </summary>
-        public string HelpKey { get; private set; }
+        public string HelpKey { get; }
 
         #endregion
     }

@@ -35,7 +35,7 @@
         /// <summary>
         /// Gets the help key.
         /// </summary>
-        public string HelpKey { get; private set; }
+        public string HelpKey { get; }
 
         #endregion
     }

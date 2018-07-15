@@ -10,9 +10,9 @@
             this.Type = type;
         }
 
-        public string Channel { get; private set; }
+        public string Channel { get; }
 
-        public Type Type { get; private set; }
+        public Type Type { get; }
 
         protected bool Equals(CommandRegistration other)
         {
@@ -29,7 +29,7 @@
 
         public override int GetHashCode()
         {
-            return (this.Channel != null ? this.Channel.GetHashCode() : 0);
+            return this.Channel != null ? this.Channel.GetHashCode() : 0;
         }
     }
 }

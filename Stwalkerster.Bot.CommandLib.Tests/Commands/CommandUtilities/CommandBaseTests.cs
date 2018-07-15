@@ -46,7 +46,6 @@
             
             commandBaseMock.CallBase = true;
             commandBaseMock.Protected().Setup("Execute").Throws<Exception>();
-            commandBaseMock.Setup(x => x.CanExecute()).Returns(true);
 
             // act
             var commandResponses = commandBaseMock.Object.Run();
@@ -70,7 +69,6 @@
             
             commandBaseMock.CallBase = true;
             commandBaseMock.Protected().Setup("Execute").Throws<ArgumentCountException>();
-            commandBaseMock.Setup(x => x.CanExecute()).Returns(true);
 
             // act
             var commandResponses = commandBaseMock.Object.Run();
@@ -94,7 +92,6 @@
             
             commandBaseMock.CallBase = true;
             commandBaseMock.Protected().Setup("Execute").Throws<CommandInvocationException>();
-            commandBaseMock.Setup(x => x.CanExecute()).Returns(true);
 
             // act
             var commandResponses = commandBaseMock.Object.Run();
@@ -118,7 +115,6 @@
             
             commandBaseMock.CallBase = true;
             commandBaseMock.Protected().Setup("Execute").Throws<Exception>();
-            commandBaseMock.Setup(x => x.CanExecute()).Returns(false);
             commandBaseMock.Protected().Setup("OnAccessDenied").Verifiable();
 
             // act
@@ -142,7 +138,8 @@
                 this.client.Object);
             
             commandBaseMock.CallBase = true;
-            commandBaseMock.Setup(x => x.CanExecute()).Returns(true);
+            this.flags.Setup(x => x.UserHasFlag(It.IsAny<IUser>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(true);
             commandBaseMock.Protected().Setup("OnCompleted").Verifiable();
 
             // act

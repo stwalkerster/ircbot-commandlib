@@ -1,5 +1,6 @@
 ﻿namespace Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -8,72 +9,22 @@
     /// The help message.
     /// </summary>
     public class HelpMessage
-    {
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="HelpMessage"/> class. 
-        /// </summary>
-        /// <param name="commandName">
-        /// The command Name.
-        /// </param>
-        /// <param name="syntax">
-        /// The syntax.
-        /// </param>
-        /// <param name="text">
-        /// The text.
-        /// </param>
+    {        
         public HelpMessage(string commandName, string syntax, string text)
             : this(commandName, new List<string> {syntax}, new List<string> {text})
         {
         }
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="HelpMessage"/> class.
-        /// </summary>
-        /// <param name="commandName">
-        /// The command name.
-        /// </param>
-        /// <param name="syntax">
-        /// The syntax.
-        /// </param>
-        /// <param name="text">
-        /// The text.
-        /// </param>
+        
         public HelpMessage(string commandName, IEnumerable<string> syntax, string text)
             : this(commandName, syntax, new List<string> {text})
         {
         }
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="HelpMessage"/> class.
-        /// </summary>
-        /// <param name="commandName">
-        /// The command name.
-        /// </param>
-        /// <param name="syntax">
-        /// The syntax.
-        /// </param>
-        /// <param name="text">
-        /// The text.
-        /// </param>
+        
         public HelpMessage(string commandName, string syntax, IEnumerable<string> text)
             : this(commandName, new List<string> {syntax}, text)
         {
         }
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="HelpMessage"/> class.
-        /// </summary>
-        /// <param name="commandName">
-        /// The command name.
-        /// </param>
-        /// <param name="syntax">
-        /// The syntax.
-        /// </param>
-        /// <param name="text">
-        /// The text.
-        /// </param>
+        
         public HelpMessage(string commandName, IEnumerable<string> syntax, IEnumerable<string> text)
         {
             this.CommandName = commandName;
@@ -81,40 +32,24 @@
             this.Text = text;
         }
 
-        #endregion
-
-        #region Public Properties
-
-        /// <summary>
-        /// Gets the command name.
-        /// </summary>
         public string CommandName { get; private set; }
+        public IEnumerable<string> Syntax { get; }
+        public IEnumerable<string> Text { get; }
 
-        /// <summary>
-        /// Gets the syntax.
-        /// </summary>
-        public IEnumerable<string> Syntax { get; private set; }
-
-        /// <summary>
-        /// Gets the text.
-        /// </summary>
-        public IEnumerable<string> Text { get; private set; }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        /// The to command responses.
-        /// </summary>
-        /// <param name="commandTrigger">
-        /// The command Trigger.
-        /// </param>
-        /// <returns>
-        /// The <see cref="IEnumerable{CommandResponse}"/>.
-        /// </returns>
-        public IEnumerable<CommandResponse> ToCommandResponses(string commandTrigger)
+        public IEnumerable<CommandResponse> ToCommandResponses(string commandTrigger, string commandName, string syntaxPrefix)
         {
+            this.CommandName = this.CommandName ?? commandName;
+
+            if (this.CommandName == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(commandName), "Command name must be specified");
+            }
+
+            if (!string.IsNullOrWhiteSpace(syntaxPrefix))
+            {
+                syntaxPrefix = " " + syntaxPrefix.Trim();
+            }
+            
             var messages = new List<CommandResponse>();
 
             messages.AddRange(
@@ -123,7 +58,7 @@
                     new CommandResponse
                         {
                             Message =
-                                string.Format("{2}{0} {1}", this.CommandName, syntax, commandTrigger), 
+                                string.Format("{2}{0}{3} {1}", this.CommandName, syntax, commandTrigger, syntaxPrefix), 
                             Destination = CommandResponseDestination.PrivateMessage,
                             Type = CommandResponseType.Notice
                         }));
@@ -133,14 +68,12 @@
                     helpText =>
                     new CommandResponse
                         {
-                            Message = string.Format("   {0}", helpText), 
+                            Message = $"   {helpText}", 
                             Destination = CommandResponseDestination.PrivateMessage,
                             Type = CommandResponseType.Notice
                         }));
 
             return messages;
         }
-
-        #endregion
     }
 }

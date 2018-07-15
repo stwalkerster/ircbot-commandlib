@@ -42,7 +42,7 @@
         public MyFlagsCommand(
             string commandSource, 
             IUser user, 
-            IEnumerable<string> arguments, 
+            IList<string> arguments, 
             ILogger logger,  
             IFlagService flagService,
             IConfigurationProvider configurationProvider,

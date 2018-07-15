@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using System.Threading;
     using Castle.Core.Internal;
     using Castle.Core.Logging;
@@ -15,41 +16,14 @@
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    /// <summary>
-    /// The command base.
-    /// </summary>
     public abstract class CommandBase : ICommand
     {
-        #region Fields
-
         private readonly IConfigurationProvider configurationProvider;
 
-        #endregion
-
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="CommandBase"/> class.
-        /// </summary>
-        /// <param name="commandSource">
-        /// The command source.
-        /// </param>
-        /// <param name="user">
-        /// The user.
-        /// </param>
-        /// <param name="arguments">
-        /// The arguments.
-        /// </param>
-        /// <param name="logger">
-        /// The logger.
-        /// </param>
-        /// <param name="flagService"></param>
-        /// <param name="configurationProvider"></param>
-        /// <param name="client"></param>
         protected CommandBase(
-            string commandSource, 
-            IUser user, 
-            IEnumerable<string> arguments, 
+            string commandSource,
+            IUser user,
+            IList<string> arguments,
             ILogger logger,
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
@@ -65,27 +39,27 @@
             this.Arguments = arguments;
         }
 
-        #endregion
-
-        #region Public Properties
-
-        public bool Executed { get; private set; }
+        protected bool Executed { get; set; }
 
         /// <inheritdoc />
         public Semaphore CommandCompletedSemaphore { get; private set; }
 
-        /// <inheritdoc />
-        public IEnumerable<string> Arguments { get; private set; }
-        
-        /// <inheritdoc />
-        public string InvokedAs { get; set; }
+        /// <summary>
+        /// Returns the collection of arguments passed to this command
+        /// </summary>
+        protected IList<string> Arguments { get; private set; }
+
+        /// <summary>
+        /// Returns the name under which this command was invoked
+        /// </summary>
+        public string InvokedAs { get; internal set; }
 
         protected IFlagService FlagService { get; private set; }
 
         /// <summary>
-        /// Gets the command name.
+        /// Returns the canonical name of this command
         /// </summary>
-        public string CommandName
+        protected string CommandName
         {
             get
             {
@@ -102,56 +76,249 @@
         /// <inheritdoc />
         public string CommandSource { get; private set; }
 
-        /// <inheritdoc />
-        public string Flag
-        {
-            get
-            {
-                var attribute = this.GetType().GetAttribute<CommandFlagAttribute>();
-
-                if (attribute == null)
-                {
-                    return null;
-                }
-                
-                return attribute.Flag;
-            }
-        }
+        /// <summary>
+        /// Gets the original string of data which was passed to this command as an argument.
+        /// </summary>
+        public string OriginalArguments { get; internal set; }
 
         /// <inheritdoc />
-        public string OriginalArguments { get; set; }
-
-        /// <inheritdoc />
-        public IEnumerable<string> RedirectionTarget { get; set; }
+        public IEnumerable<string> RedirectionTarget { get; internal set; }
 
         /// <inheritdoc />
         public IUser User { get; private set; }
 
-        #endregion
-
-        #region Properties
-
-        /// <summary>
-        /// Gets the logger.
-        /// </summary>
         protected ILogger Logger { get; private set; }
-
         protected IIrcClient Client { get; private set; }
 
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <inheritdoc />
-        public virtual bool CanExecute()
+        private string GetLocalFlag(MethodInfo locality)
         {
-            return this.FlagService.UserHasFlag(this.User, this.Flag, this.CommandSource);
+            var attr = locality.GetAttribute<CommandFlagAttribute>();
+            if (attr == null)
+            {
+                return this.GetGlobalFlag();
+            }
+
+            return attr.Flag;
+        }
+
+        protected abstract IEnumerable<CommandResponse> Execute();
+
+        public IEnumerable<CommandResponse> Run()
+        {
+            if (this.Executed)
+            {
+                throw new Exception("Already executed instance of command");
+            }
+
+            try
+            {
+                // Test global access for this command
+                if (!this.FlagService.UserHasFlag(this.User, this.GetGlobalFlag(), this.CommandSource))
+                {
+                    this.Logger.InfoFormat("Access denied command-globally for user {0}", this.User);
+
+                    var accessDeniedResponses = this.OnAccessDenied() ?? new List<CommandResponse>();
+                    return accessDeniedResponses;
+                }
+
+                var subCommandMethod = this.GetSubCommandMethod();
+
+                if (subCommandMethod == null)
+                {
+                    this.Logger.ErrorFormat(
+                        "Error locating executable method for command {0} with args: {1}",
+                        this.CommandName,
+                        this.OriginalArguments);
+                    
+                    return new List<CommandResponse>
+                    {
+                        new CommandResponse
+                        {
+                            Destination = CommandResponseDestination.PrivateMessage,
+                            Message = "Error encountered while running command."
+                        }
+                    };
+                }
+                
+                // Test local access for this command
+                if (!this.FlagService.UserHasFlag(
+                        this.User,
+                        this.GetLocalFlag(subCommandMethod),
+                        this.CommandSource))
+                {
+                    this.Logger.InfoFormat("Access denied subcommand-locally for user {0}", this.User);
+
+                    var accessDeniedResponses = this.OnAccessDenied() ?? new List<CommandResponse>();
+                    return accessDeniedResponses;
+                }
+
+                try
+                {
+                    var commandResponses = (IEnumerable<CommandResponse>) subCommandMethod.Invoke(this, null);
+
+                    commandResponses = commandResponses ?? new List<CommandResponse>();
+                    
+                    var completedResponses = this.OnCompleted() ?? new List<CommandResponse>();
+
+                    // Resolve the list into a concrete list before committing the transaction.
+                    var responses = commandResponses.Concat(completedResponses).ToList();
+
+                    return responses;
+                }
+                catch (TargetInvocationException e) when (e.InnerException is CommandInvocationException)
+                {
+                    this.Logger.Info("Command encountered an issue from invocation.");
+
+                    return this.HelpMessage(((CommandInvocationException) e.InnerException).HelpKey);
+                }
+                catch (TargetInvocationException e) when (e.InnerException is ArgumentCountException)
+                {
+                    this.Logger.Info("Command executed with missing arguments.");
+
+                    var responses = new List<CommandResponse>
+                    {
+                        new CommandResponse
+                        {
+                            Destination = CommandResponseDestination.Default,
+                            Message = e.InnerException.Message 
+                        }
+                    };
+
+                    responses.AddRange(this.HelpMessage(((ArgumentCountException) e.InnerException).HelpKey));
+
+                    return responses;
+                }
+                catch (TargetInvocationException e) when (e.InnerException is CommandExecutionException)
+                {
+                    this.Logger.Warn("Command encountered an issue during execution.", e.InnerException);
+
+                    return new List<CommandResponse>
+                    {
+                        new CommandResponse
+                        {
+                            Destination = CommandResponseDestination.Default,
+                            Message = e.InnerException.Message
+                        }
+                    };
+                }
+                catch (Exception e)
+                {
+                    this.Logger.Error("Unhandled exception during command execution", e);
+
+                    return new List<CommandResponse>
+                    {
+                        new CommandResponse
+                        {
+                            Destination = CommandResponseDestination.Default,
+                            Message = "Unhandled exception during command execution."
+                        }
+                    };
+                }
+            }
+            finally
+            {
+                this.Executed = true;
+            }
+        }
+
+        private MethodInfo GetSubCommandMethod()
+        {
+            if (!this.Arguments.Any())
+            {
+                var subCommandMethod = this.GetType()
+                    .GetMethod("Execute", BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic);
+                return subCommandMethod;
+            }
+
+            var methodInfos = this.GetType()
+                .GetMethods(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic);
+            
+            foreach (var info in methodInfos)
+            {
+                this.Logger.DebugFormat("Found method: {0}", info.Name);
+                
+                if (info.IsAbstract || info.IsConstructor || info.IsPrivate)
+                {
+                    continue;
+                }
+
+                var attr = info.GetAttribute<SubcommandInvocationAttribute>();
+                if (attr == null)
+                {
+                    continue;
+                }
+
+                if (attr.CommandName.ToLower() != this.Arguments.First())
+                {
+                    continue;
+                }
+
+                if (info.ReturnType != typeof(IEnumerable<CommandResponse>))
+                {
+                    this.Logger.Error("Found subcommand, but subcommand return type is wrong.");
+                    break;
+                }
+
+                if (info.GetParameters().Any())
+                {
+                    this.Logger.Error("Found subcommand, but subcommand has parameters.");
+                    break;
+                }
+
+                this.Logger.DebugFormat(
+                    "Invoking method {0} as subcommand for command {1}",
+                    info.Name,
+                    this.InvokedAs);
+                    
+                this.Arguments.RemoveAt(0);
+
+                return info;
+            }
+
+            return this.GetType()
+                .GetMethod("Execute", BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic);
+        }
+
+        protected string GetGlobalFlag()
+        {
+            var attribute = this.GetType().GetAttribute<CommandFlagAttribute>();
+
+            return attribute == null ? null : attribute.Flag;
         }
 
         /// <inheritdoc />
         public IEnumerable<CommandResponse> HelpMessage(string helpKey = null)
         {
             var helpMessages = this.Help();
+            
+            var methodInfos = this.GetType()
+                .GetMethods(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic);
+
+            foreach (var info in methodInfos)
+            {
+                if (info.IsAbstract || info.IsConstructor || info.IsPrivate)
+                {
+                    continue;
+                }
+
+                var invokAttr = info.GetAttribute<SubcommandInvocationAttribute>();
+                if (invokAttr == null && info.Name != "Execute")
+                {
+                    continue;
+                }
+                
+                var helpAttr = info.GetAttribute<HelpAttribute>();
+                if (helpAttr == null)
+                {
+                    continue;
+                }
+
+                if (this.FlagService.UserHasFlag(this.User, this.GetLocalFlag(info), this.CommandSource))
+                {
+                    var cmdName = invokAttr == null ? string.Empty : invokAttr.CommandName;
+                    helpMessages.Add(cmdName, helpAttr.HelpMessage);
+                }
+            }
 
             var commandTrigger = this.configurationProvider.CommandPrefix;
 
@@ -162,165 +329,39 @@
 
             if (helpKey != null && helpMessages.ContainsKey(helpKey))
             {
-                return helpMessages[helpKey].ToCommandResponses(commandTrigger);
+                return helpMessages[helpKey].ToCommandResponses(commandTrigger, this.CommandName, helpKey);
             }
 
             var help = new List<CommandResponse>();
             foreach (var helpMessage in helpMessages)
             {
-                help.AddRange(helpMessage.Value.ToCommandResponses(commandTrigger));
+                help.AddRange(helpMessage.Value.ToCommandResponses(commandTrigger, this.CommandName, helpMessage.Key));
             }
 
             return help;
         }
 
-        /// <inheritdoc />
-        public IEnumerable<CommandResponse> Run()
-        {
-            if (this.Executed)
-            {
-                throw new Exception("Already executed instance of command");
-            }
-
-            try
-            {
-                if (this.CanExecute())
-                {
-                    try
-                    {
-                        var commandResponses = this.Execute() ?? new List<CommandResponse>();
-                        var completedResponses = this.OnCompleted() ?? new List<CommandResponse>();
-
-                        // Resolve the list into a concrete list before committing the transaction.
-                        var responses = commandResponses.Concat(completedResponses).ToList();
-
-                        return responses;
-                    }
-                    catch (CommandInvocationException e)
-                    {
-                        this.Logger.Info("Command encountered an issue from invocation.");
-
-                        return this.HelpMessage(e.HelpKey);
-                    }
-                    catch (ArgumentCountException e)
-                    {
-                        this.Logger.Info("Command executed with missing arguments.");
-
-                        var responses = new List<CommandResponse>
-                        {
-                            new CommandResponse
-                            {
-                                Destination = CommandResponseDestination.Default,
-                                Message = e.Message
-                            }
-                        };
-
-                        responses.AddRange(this.HelpMessage(e.HelpKey));
-
-                        return responses;
-                    }
-                    catch (CommandExecutionException e)
-                    {
-                        this.Logger.Warn("Command encountered an issue during execution.", e);
-
-                        return new List<CommandResponse>
-                        {
-                            new CommandResponse
-                            {
-                                Destination = CommandResponseDestination.Default,
-                                Message = e.Message
-                            }
-                        };
-                    }
-                    catch (Exception e)
-                    {
-                        this.Logger.Error("Unhandled exception during command execution", e);
-                        
-                        return new List<CommandResponse>
-                        {
-                            new CommandResponse
-                            {
-                                Destination = CommandResponseDestination.Default,
-                                Message = "Unhandled exception during command execution."
-                            }
-                        };
-                    }
-                }
-
-                this.Logger.InfoFormat("Access denied for user {0}", this.User);
-
-                IEnumerable<CommandResponse> accessDeniedResponses = this.OnAccessDenied()
-                                                                     ?? new List<CommandResponse>();
-
-                return accessDeniedResponses;
-            }
-            finally
-            {
-                this.Executed = true;
-            }
-        }
-
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// The execute.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="IEnumerable{CommandResponse}"/>.
-        /// </returns>
-        protected abstract IEnumerable<CommandResponse> Execute();
-
-        /// <summary>
-        /// The help.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="IDictionary{String, HelpMessage}"/>.
-        /// </returns>
-        protected virtual IDictionary<string, HelpMessage> Help()
-        {
-            return new Dictionary<string, HelpMessage>
-                       {
-                           {
-                               string.Empty, 
-                               new HelpMessage(
-                               this.CommandName, 
-                               string.Empty, 
-                               "No help is available for this command.")
-                           }
-                       };
-        }
-
-        /// <summary>
-        /// The on access denied.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="IEnumerable{CommandResponse}"/>.
-        /// </returns>
         protected virtual IEnumerable<CommandResponse> OnAccessDenied()
         {
             var response = new CommandResponse
-                               {
-                                   Destination = CommandResponseDestination.PrivateMessage, 
-                                   Message = "Access denied, sorry. :(",
-                                   IgnoreRedirection = true
-                               };
+            {
+                Destination = CommandResponseDestination.PrivateMessage, 
+                Message = "Access denied, sorry. :(",
+                IgnoreRedirection = true
+            };
 
             return new List<CommandResponse> {response};
         }
 
-        /// <summary>
-        /// The on completed.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="IEnumerable{CommandResponse}"/>.
-        /// </returns>
         protected virtual IEnumerable<CommandResponse> OnCompleted()
         {
             return null;
         }
 
-        #endregion
+        [Obsolete]
+        protected virtual IDictionary<string, HelpMessage> Help()
+        {
+            return new Dictionary<string, HelpMessage>();
+        }
     }
 }

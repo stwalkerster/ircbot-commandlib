@@ -29,7 +29,7 @@
         /// <returns>
         /// The <see cref="ICommand"/>.
         /// </returns>
-        T Create<T>(string commandSource, IUser user, IEnumerable<string> arguments)
+        T Create<T>(string commandSource, IUser user, IList<string> arguments)
             where T : ICommand;
 
         /// <summary>

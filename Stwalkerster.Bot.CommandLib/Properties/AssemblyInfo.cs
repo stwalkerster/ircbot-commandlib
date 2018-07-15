@@ -11,6 +11,6 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCulture("")]
 
 [assembly: AssemblyVersion("0.0.0.0")]
-[assembly: AssemblyFileVersion("0.0.*")]
+[assembly: AssemblyFileVersion("0.0.0.0")]
 [assembly: AssemblyInformationalVersion("0.0.0-dev")]
 [assembly: InternalsVisibleTo("Stwalkerster.Bot.CommandLib.Tests")]

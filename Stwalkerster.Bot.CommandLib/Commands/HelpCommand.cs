@@ -16,46 +16,16 @@
     /// <summary>
     /// The help command.
     /// </summary>
-    [CommandFlag(Model.Flag.Standard)]
+    [CommandFlag(Flag.Standard)]
     [CommandInvocation("help")]
     public class HelpCommand : CommandBase
     {
-        #region Fields
-
-        /// <summary>
-        /// The command parser.
-        /// </summary>
         private readonly ICommandParser commandParser;
 
-        #endregion
-
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="HelpCommand"/> class.
-        /// </summary>
-        /// <param name="commandSource">
-        /// The command source.
-        /// </param>
-        /// <param name="user">
-        /// The user.
-        /// </param>
-        /// <param name="arguments">
-        /// The arguments.
-        /// </param>
-        /// <param name="logger">
-        /// The logger.
-        /// </param>
-        /// <param name="flagService"></param>
-        /// <param name="configurationProvider"></param>
-        /// <param name="commandParser">
-        /// The command Parser.
-        /// </param>
-        /// <param name="client"></param>
         public HelpCommand(
             string commandSource, 
             IUser user, 
-            IEnumerable<string> arguments, 
+            IList<string> arguments, 
             ILogger logger,  
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
@@ -66,29 +36,18 @@
             this.commandParser = commandParser;
         }
 
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// The execute.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="IEnumerable{CommandResponse}"/>.
-        /// </returns>
         protected override IEnumerable<CommandResponse> Execute()
         {
             if (!this.Arguments.Any())
             {
-                // Yes, this should be a CIE not a ACE, as an ACE will trigger a call to this command
-                throw new CommandInvocationException();
+                throw new ArgumentCountException();
             }
 
             string commandName = this.Arguments.ElementAt(0);
-            string key = this.Arguments.Count() > 1 ? this.Arguments.ElementAt(1) : null;
+            string key = this.Arguments.Count > 1 ? this.Arguments.ElementAt(1) : null;
 
             var command = this.commandParser.GetCommand(
-                new CommandMessage { CommandName = commandName }, 
+                new CommandMessage ( commandName ), 
                 this.User, 
                 this.CommandSource,
                 this.Client);
@@ -110,12 +69,6 @@
             return helpResponses;
         }
 
-        /// <summary>
-        /// The help.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="IEnumerable{CommandResponse}"/>.
-        /// </returns>
         protected override IDictionary<string, HelpMessage> Help()
         {
             return new Dictionary<string, HelpMessage>
@@ -136,7 +89,5 @@
                            }
                        };
         }
-
-        #endregion
     }
 }

@@ -2,34 +2,14 @@
 {
     using System;
 
-    /// <summary>
-    /// The command flag attribute.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class CommandFlagAttribute : Attribute
     {
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="CommandFlagAttribute"/> class.
-        /// </summary>
-        /// <param name="flag">
-        /// The flag.
-        /// </param>
         public CommandFlagAttribute(string flag)
         {
             this.Flag = flag;
         }
 
-        #endregion
-
-        #region Public Properties
-
-        /// <summary>
-        /// Gets or flag.
-        /// </summary>
-        public string Flag { get; private set; }
-
-        #endregion
+        public string Flag { get; }
     }
 }

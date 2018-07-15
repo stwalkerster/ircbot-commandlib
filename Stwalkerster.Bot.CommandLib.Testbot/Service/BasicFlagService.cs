@@ -6,7 +6,24 @@
 
     public class BasicFlagService : IFlagService
     {
-        public bool UserHasFlag(IUser user, string flag, string locality) { return true; }
-        public IEnumerable<string> GetFlagsForUser(IUser user, string locality) { return new[] {"O", "S"}; }
+        public bool UserHasFlag(IUser user, string flag, string locality)
+        {
+            if (user.Nickname == "stwalkerster")
+            {
+                return true;
+            }
+
+            return flag == "S";
+        }
+
+        public IEnumerable<string> GetFlagsForUser(IUser user, string locality)
+        {
+            if (user.Nickname == "stwalkerster")
+            {
+                return new[] {"O", "S"};    
+            }
+            
+            return new[] {"S"};
+        }
     }
 }

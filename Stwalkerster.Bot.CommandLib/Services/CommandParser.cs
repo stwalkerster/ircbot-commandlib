@@ -116,27 +116,9 @@
 
         #region Public Methods and Operators
 
-        /// <summary>
-        /// The get command.
-        /// </summary>
-        /// <param name="commandMessage">
-        /// The command Message.
-        /// </param>
-        /// <param name="user">
-        /// The user.
-        /// </param>
-        /// <param name="destination">
-        /// The destination.
-        /// </param>
-        /// <param name="client">
-        /// The client.
-        /// </param>
-        /// <returns>
-        /// The <see cref="ICommand"/>.
-        /// </returns>
         public ICommand GetCommand(CommandMessage commandMessage, IUser user, string destination, IIrcClient client)
         {
-            if (commandMessage == null || commandMessage.CommandName == null)
+            if (commandMessage?.CommandName == null)
             {
                 this.logger.Debug("Returning early from GetCommand - null message!");
                 return null;
@@ -151,7 +133,7 @@
             }
 
             var redirectionResult = this.ParseRedirection(originalArguments);
-            IEnumerable<string> arguments = redirectionResult.Arguments.ToList();
+            IList<string> arguments = redirectionResult.Arguments.ToList();
 
             var commandName = commandMessage.CommandName.ToLower(CultureInfo.InvariantCulture);
             var commandType = this.GetRegisteredCommand(commandName, destination);
@@ -164,9 +146,12 @@
                 {
                     var command = this.commandFactory.CreateType(commandType, destination, user, arguments);
 
-                    command.RedirectionTarget = redirectionResult.Target;
-                    command.OriginalArguments = commandMessage.ArgumentList;
-                    command.InvokedAs = commandName;
+                    if (command is CommandBase runnable)
+                    {
+                        runnable.RedirectionTarget = redirectionResult.Target;
+                        runnable.OriginalArguments = commandMessage.ArgumentList;
+                        runnable.InvokedAs = commandName;
+                    }
 
                     return command;
                 }
@@ -191,6 +176,7 @@
             return null;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// The parse redirection.
         /// </summary>
@@ -198,7 +184,7 @@
         /// The input arguments.
         /// </param>
         /// <returns>
-        /// The <see cref="RedirectionResult"/>.
+        /// The <see cref="T:Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models.RedirectionResult" />.
         /// </returns>
         public RedirectionResult ParseRedirection(IEnumerable<string> inputArguments)
         {
@@ -284,33 +270,25 @@
 
             if (m.Length > 0)
             {
-                var commandMessage = new CommandMessage();
+                var overrideSilence = m.Groups["botname"].Length > 0;
 
-                if (m.Groups["botname"].Length > 0)
-                {
-                    commandMessage.OverrideSilence = true;
-                }
-
+                string commandName;
                 if (m.Groups["cmd"].Length > 0)
                 {
-                    commandMessage.CommandName = m.Groups["cmd"].Value.Trim();
+                    commandName = m.Groups["cmd"].Value.Trim();
                 }
                 else
                 {
                     return null;
                 }
 
+                var argList = string.Empty;
                 if (m.Groups["args"].Length > 0)
                 {
-                    commandMessage.ArgumentList = m.Groups["args"].Length > 0
-                                                      ? m.Groups["args"].Value.Trim()
-                                                      : string.Empty;
-                }
-                else
-                {
-                    commandMessage.ArgumentList = string.Empty;
+                    argList = m.Groups["args"].Value.Trim();
                 }
 
+                var commandMessage = new CommandMessage(commandName, argList, overrideSilence);
                 return commandMessage;
             }
 
@@ -408,8 +386,7 @@
         
         public Type GetRegisteredCommand(string commandName, string destination)
         {
-            Dictionary<CommandRegistration, Type> commandRegistrationSet;
-            if (!this.commands.TryGetValue(commandName, out commandRegistrationSet))
+            if (!this.commands.TryGetValue(commandName, out var commandRegistrationSet))
             {
                 // command doesn't exist anywhere
                 return null;

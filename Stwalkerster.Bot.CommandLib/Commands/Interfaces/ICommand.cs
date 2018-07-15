@@ -10,38 +10,16 @@
     /// </summary>
     public interface ICommand
     {
-        #region Public Properties
-
-        /// <summary>
-        /// Gets the arguments to the command.
-        /// </summary>
-        IEnumerable<string> Arguments { get; }
-
         /// <summary>
         /// Gets the source (where the command was triggered).
         /// </summary>
         string CommandSource { get; }
 
         /// <summary>
-        /// Gets the flag required to execute.
-        /// </summary>
-        string Flag { get; }
-
-        /// <summary>
-        /// Gets or sets the original arguments.
-        /// </summary>
-        string OriginalArguments { get; set; }
-
-        /// <summary>
         /// Gets or sets the redirection target.
         /// </summary>
-        IEnumerable<string> RedirectionTarget { get; set; }
+        IEnumerable<string> RedirectionTarget { get; }
         
-        /// <summary>
-        /// Gets or sets the name under which the command was invoked.
-        /// </summary>
-        string InvokedAs { get; set; }
-
         /// <summary>
         /// Gets the user who triggered the command.
         /// </summary>
@@ -55,27 +33,6 @@
         /// </summary>
         Semaphore CommandCompletedSemaphore { get; }
 
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        /// Returns true if the command can be executed.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
-        bool CanExecute();
-
-        /// <summary>
-        /// The help message.
-        /// </summary>
-        /// <param name="helpKey">
-        /// The help Key.
-        /// </param>
-        /// <returns>
-        /// The <see cref="IEnumerable{CommandResponse}"/>.
-        /// </returns>
         IEnumerable<CommandResponse> HelpMessage(string helpKey = null);
 
         /// <summary>
@@ -85,7 +42,5 @@
         /// The <see cref="IEnumerable{CommandResponse}"/>.
         /// </returns>
         IEnumerable<CommandResponse> Run();
-
-        #endregion
     }
 }

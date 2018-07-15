@@ -1,8 +1,5 @@
 ﻿namespace Stwalkerster.Bot.CommandLib.Model
 {
-    /// <summary>
-    /// The flag.
-    /// </summary>
     public class Flag
     {
         #region Constants

@@ -11,7 +11,7 @@
     <AssemblyName>Stwalkerster.Bot.CommandLib</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <LangVersion>5</LangVersion>
+    <LangVersion>7</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -51,15 +51,14 @@
   <ItemGroup>
     <Compile Include="Attributes\CommandFlagAttribute.cs" />
     <Compile Include="Attributes\CommandInvocationAttribute.cs" />
-    <Compile Include="Commands\AccessControl\CommandAccessCommand.cs" />
+    <Compile Include="Attributes\HelpAttribute.cs" />
+    <Compile Include="Attributes\SubcommandInvocationAttribute.cs" />
     <Compile Include="Commands\AccessControl\MyFlagsCommand.cs" />
-    <Compile Include="Commands\BotManagement\DieCommand.cs" />
-    <Compile Include="Commands\CommandUtilities\CommandBase.cs" />
     <Compile Include="Commands\CommandUtilities\Models\HelpMessage.cs" />
     <Compile Include="Commands\CommandUtilities\Models\RedirectionResult.cs" />
+    <Compile Include="Commands\CommandUtilities\CommandBase.cs" />
     <Compile Include="Commands\CommandUtilities\Response\CommandResponse.cs" />
     <Compile Include="Commands\CommandUtilities\Response\CommandResponseDestination.cs" />
-    <Compile Include="Commands\CommandUtilities\Response\CommandResponseHandler.cs" />
     <Compile Include="Commands\CommandUtilities\Response\CommandResponseType.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\Interfaces\ICommand.cs" />
