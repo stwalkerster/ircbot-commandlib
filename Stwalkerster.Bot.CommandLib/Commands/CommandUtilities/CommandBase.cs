@@ -12,6 +12,7 @@
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
     using Stwalkerster.Bot.CommandLib.Exceptions;
+    using Stwalkerster.Bot.CommandLib.Model;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
@@ -324,7 +325,7 @@
 
         private bool AllowedMainCommand()
         {
-            var flagAttributes = this.GetType().GetAttributes<CommandFlagAttribute>();
+            var flagAttributes = this.GetType().GetAttributes<CommandFlagAttribute>().ToList();
             foreach (var attribute in flagAttributes)
             {
                 var result = this.FlagService.UserHasFlag(
@@ -336,6 +337,13 @@
                 {
                     return true;
                 }
+            }
+
+            if (!flagAttributes.Any())
+            {
+                this.Logger.Warn(
+                    "Access to command was assumed to be owner-level because there are no flags set for this command.");
+                return this.FlagService.UserHasFlag(this.User, Flag.Owner, this.CommandSource);
             }
 
             return false;
