@@ -42,6 +42,8 @@
         public ArgumentCountException(int expectedCount, int actualCount, string helpKey)
             : base($"Insufficient arguments to command. Expected {expectedCount}, got {actualCount}.")
         {
+            this.ExpectedCount = expectedCount;
+            this.ActualCount = actualCount;
             this.HelpKey = helpKey;
         }
 
@@ -53,6 +55,9 @@
         #endregion
 
         #region Public Properties
+
+        public int ExpectedCount { get; }
+        public int ActualCount { get; }
 
         /// <summary>
         /// Gets the help key.

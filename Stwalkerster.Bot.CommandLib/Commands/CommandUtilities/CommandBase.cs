@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using System.Runtime.InteropServices;
     using System.Threading;
     using Castle.Core.Internal;
     using Castle.Core.Logging;
@@ -42,19 +43,19 @@
         protected bool Executed { get; set; }
 
         /// <inheritdoc />
-        public Semaphore CommandCompletedSemaphore { get; private set; }
+        public Semaphore CommandCompletedSemaphore { get; }
 
         /// <summary>
         /// Returns the collection of arguments passed to this command
         /// </summary>
-        protected IList<string> Arguments { get; private set; }
+        protected IList<string> Arguments { get; }
 
         /// <summary>
         /// Returns the name under which this command was invoked
         /// </summary>
         public string InvokedAs { get; internal set; }
 
-        protected IFlagService FlagService { get; private set; }
+        protected IFlagService FlagService { get; }
 
         /// <summary>
         /// Returns the canonical name of this command
@@ -74,7 +75,7 @@
         }
 
         /// <inheritdoc />
-        public string CommandSource { get; private set; }
+        public string CommandSource { get; }
 
         /// <summary>
         /// Gets the original string of data which was passed to this command as an argument.
@@ -85,20 +86,15 @@
         public IEnumerable<string> RedirectionTarget { get; internal set; }
 
         /// <inheritdoc />
-        public IUser User { get; private set; }
+        public IUser User { get; }
 
-        protected ILogger Logger { get; private set; }
-        protected IIrcClient Client { get; private set; }
+        protected ILogger Logger { get; }
+        protected IIrcClient Client { get; }
 
         private string GetLocalFlag(MethodInfo locality)
         {
             var attr = locality.GetAttribute<CommandFlagAttribute>();
-            if (attr == null)
-            {
-                return this.GetGlobalFlag();
-            }
-
-            return attr.Flag;
+            return attr == null ? this.GetGlobalFlag() : attr.Flag;
         }
 
         protected abstract IEnumerable<CommandResponse> Execute();
@@ -152,6 +148,11 @@
                     return accessDeniedResponses;
                 }
 
+                if (!this.ValidateArgumentCount(subCommandMethod, out var response))
+                {
+                    return response;
+                }
+
                 try
                 {
                     var commandResponses = (IEnumerable<CommandResponse>) subCommandMethod.Invoke(this, null);
@@ -173,20 +174,7 @@
                 }
                 catch (TargetInvocationException e) when (e.InnerException is ArgumentCountException)
                 {
-                    this.Logger.Info("Command executed with missing arguments.");
-
-                    var responses = new List<CommandResponse>
-                    {
-                        new CommandResponse
-                        {
-                            Destination = CommandResponseDestination.Default,
-                            Message = e.InnerException.Message 
-                        }
-                    };
-
-                    responses.AddRange(this.HelpMessage(((ArgumentCountException) e.InnerException).HelpKey));
-
-                    return responses;
+                    return this.AlertArgumentCount((ArgumentCountException) e.InnerException);
                 }
                 catch (TargetInvocationException e) when (e.InnerException is CommandExecutionException)
                 {
@@ -219,6 +207,44 @@
             {
                 this.Executed = true;
             }
+        }
+
+        private bool ValidateArgumentCount(MethodInfo info, out IEnumerable<CommandResponse> response)
+        {
+            var attr = info.GetAttribute<RequiredArgumentsAttribute>();
+            if (attr == null)
+            {
+                response = null;
+                return true;
+            }
+
+            if (attr.RequiredArguments <= this.Arguments.Count)
+            {
+                response = null;
+                return true;
+            }
+
+            response = this.AlertArgumentCount(
+                new ArgumentCountException(attr.RequiredArguments, this.Arguments.Count));
+            return false;
+        }
+        
+        private IEnumerable<CommandResponse> AlertArgumentCount(ArgumentCountException e)
+        {
+            this.Logger.Info("Command executed with missing arguments.");
+
+            var responses = new List<CommandResponse>
+            {
+                new CommandResponse
+                {
+                    Destination = CommandResponseDestination.Default,
+                    Message = e.Message 
+                }
+            };
+
+            responses.AddRange(this.HelpMessage(e.HelpKey));
+            
+            return responses;
         }
 
         private MethodInfo GetSubCommandMethod()
@@ -279,11 +305,11 @@
                 .GetMethod("Execute", BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic);
         }
 
-        protected string GetGlobalFlag()
+        private string GetGlobalFlag()
         {
             var attribute = this.GetType().GetAttribute<CommandFlagAttribute>();
 
-            return attribute == null ? null : attribute.Flag;
+            return attribute?.Flag;
         }
 
         /// <inheritdoc />

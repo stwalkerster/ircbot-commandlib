@@ -52,6 +52,7 @@
     <Compile Include="Attributes\CommandFlagAttribute.cs" />
     <Compile Include="Attributes\CommandInvocationAttribute.cs" />
     <Compile Include="Attributes\HelpAttribute.cs" />
+    <Compile Include="Attributes\RequiredArgumentsAttribute.cs" />
     <Compile Include="Attributes\SubcommandInvocationAttribute.cs" />
     <Compile Include="Commands\AccessControl\MyFlagsCommand.cs" />
     <Compile Include="Commands\CommandUtilities\Models\HelpMessage.cs" />
