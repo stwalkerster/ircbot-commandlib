@@ -1,9 +1,8 @@
-﻿namespace Stwalkerster.Bot.CommandLib.Commands
+﻿namespace Stwalkerster.Bot.CommandLib.Commands.BaseImplementations
 {
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
-    using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -13,20 +12,15 @@
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    /// <summary>
-    /// The help command.
-    /// </summary>
-    [CommandFlag(Flag.Standard)]
-    [CommandInvocation("help")]
-    public class HelpCommand : CommandBase
+    public abstract class HelpCommandBase : CommandBase
     {
         private readonly ICommandParser commandParser;
 
-        public HelpCommand(
-            string commandSource, 
-            IUser user, 
-            IList<string> arguments, 
-            ILogger logger,  
+        protected HelpCommandBase(
+            string commandSource,
+            IUser user,
+            IList<string> arguments,
+            ILogger logger,
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             ICommandParser commandParser,
@@ -47,8 +41,8 @@
             var key = this.Arguments.Count > 1 ? this.Arguments.ElementAt(1) : null;
 
             var command = this.commandParser.GetCommand(
-                new CommandMessage ( commandName ), 
-                this.User, 
+                new CommandMessage(commandName),
+                this.User,
                 this.CommandSource,
                 this.Client);
 
@@ -72,22 +66,22 @@
         protected override IDictionary<string, HelpMessage> Help()
         {
             return new Dictionary<string, HelpMessage>
-                       {
-                           {
-                               string.Empty, 
-                               new HelpMessage(
-                               this.CommandName, 
-                               "<Command>", 
-                               "Returns all available help for the specified command.")
-                           }, 
-                           {
-                               "command", 
-                               new HelpMessage(
-                               this.CommandName, 
-                               "<Command> <SubCommand>", 
-                               "Returns the help for the specified subcommand.")
-                           }
-                       };
+            {
+                {
+                    string.Empty,
+                    new HelpMessage(
+                        this.CommandName,
+                        "<Command>",
+                        "Returns all available help for the specified command.")
+                },
+                {
+                    "command",
+                    new HelpMessage(
+                        this.CommandName,
+                        "<Command> <SubCommand>",
+                        "Returns the help for the specified subcommand.")
+                }
+            };
         }
     }
 }

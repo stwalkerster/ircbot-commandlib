@@ -56,14 +56,14 @@
     <Compile Include="Attributes\HelpAttribute.cs" />
     <Compile Include="Attributes\RequiredArgumentsAttribute.cs" />
     <Compile Include="Attributes\SubcommandInvocationAttribute.cs" />
-    <Compile Include="Commands\AccessControl\MyFlagsCommand.cs" />
+    <Compile Include="Commands\BaseImplementations\HelpCommandBase.cs" />
+    <Compile Include="Commands\BaseImplementations\MyFlagsCommandBase.cs" />
     <Compile Include="Commands\CommandUtilities\Models\HelpMessage.cs" />
     <Compile Include="Commands\CommandUtilities\Models\RedirectionResult.cs" />
     <Compile Include="Commands\CommandUtilities\CommandBase.cs" />
     <Compile Include="Commands\CommandUtilities\Response\CommandResponse.cs" />
     <Compile Include="Commands\CommandUtilities\Response\CommandResponseDestination.cs" />
     <Compile Include="Commands\CommandUtilities\Response\CommandResponseType.cs" />
-    <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\Interfaces\ICommand.cs" />
     <Compile Include="Exceptions\ArgumentCountException.cs" />
     <Compile Include="Exceptions\CommandErrorException.cs" />
@@ -84,12 +84,6 @@
     <Compile Include="Services\Interfaces\IFlagService.cs" />
     <Compile Include="Startup\Installer.cs" />
     <Compile Include="TypedFactories\ICommandTypedFactory.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Stwalkerster.Extensions\Stwalkerster.Extensions.csproj">
-      <Project>{452248af-32ab-4a57-85fa-fb6173f6ce41}</Project>
-      <Name>Stwalkerster.Extensions</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
