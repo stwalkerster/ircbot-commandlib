@@ -8,7 +8,7 @@
     </options>
     <parameters>
       <param name="system.Configuration" value="Release" />
-      <param name="version" value="11.7" />
+      <param name="version" value="11.8" />
     </parameters>
     <build-runners>
       <runner id="RUNNER_14" name="" type="jb.nuget.installer">
@@ -94,4 +94,3 @@
     <cleanup />
   </settings>
 </build-type>
-
