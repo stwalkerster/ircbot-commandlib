@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="Command\TestCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\AccessReporterService.cs" />
     <Compile Include="Service\BasicFlagService.cs" />
     <Compile Include="Service\ConfigurationProvider.cs" />
     <Compile Include="Service\Program.cs" />

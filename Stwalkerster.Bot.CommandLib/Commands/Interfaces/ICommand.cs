@@ -2,7 +2,9 @@
 {
     using System.Collections.Generic;
     using System.Threading;
+    using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
+    using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
@@ -11,27 +13,46 @@
     public interface ICommand
     {
         /// <summary>
-        /// Gets the source (where the command was triggered).
-        /// </summary>
-        string CommandSource { get; }
-
-        /// <summary>
-        /// Gets or sets the redirection target.
-        /// </summary>
-        IEnumerable<string> RedirectionTarget { get; }
-        
-        /// <summary>
-        /// Gets the user who triggered the command.
-        /// </summary>
-        IUser User { get; }
-
-        /// <summary>
         /// Gets the command Completed Semaphore.
         /// <para>
         /// This semaphore can be set with <code>CommandCompletedSemaphore.WaitOne()</code> to suspend destruction of the command for a maximum of thirty seconds.
         /// </para>
         /// </summary>
         Semaphore CommandCompletedSemaphore { get; }
+
+        bool Executed { get; }
+        CommandAclStatus AclStatus { get; }
+
+        /// <summary>
+        /// Returns the collection of arguments passed to this command
+        /// </summary>
+        IList<string> Arguments { get; }
+
+        /// <summary>
+        /// Returns the name under which this command was invoked
+        /// </summary>
+        string InvokedAs { get; }
+
+        /// <summary>
+        /// Returns the canonical name of this command
+        /// </summary>
+        string CommandName { get; }
+
+        /// <inheritdoc />
+        string CommandSource { get; }
+
+        /// <summary>
+        /// Gets the original string of data which was passed to this command as an argument.
+        /// </summary>
+        string OriginalArguments { get; }
+
+        /// <inheritdoc />
+        IEnumerable<string> RedirectionTarget { get; }
+
+        /// <inheritdoc />
+        IUser User { get; }
+
+        IIrcClient Client { get; }
 
         IEnumerable<CommandResponse> HelpMessage(string helpKey = null);
 

@@ -1,8 +1,10 @@
 ﻿namespace Stwalkerster.Bot.CommandLib.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading;
     using Castle.Core.Logging;
+    using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Events;
@@ -29,6 +31,8 @@
         private readonly IConfigurationProvider configProvider;
 
         #endregion
+
+        public event EventHandler<CommandExecutedEventArgs> CommandExecuted;
 
         #region Constructors and Destructors
 
@@ -103,6 +107,8 @@
             try
             {
                 IEnumerable<CommandResponse> commandResponses = command.Run();
+
+                this.CommandExecuted?.Invoke(this, new CommandExecutedEventArgs(command));
 
                 foreach (var x in commandResponses)
                 {

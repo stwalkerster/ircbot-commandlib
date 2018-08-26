@@ -38,17 +38,20 @@
             this.CommandSource = commandSource;
             this.User = user;
             this.Arguments = arguments;
+            this.AclStatus = CommandAclStatus.Prerun;
         }
 
-        protected bool Executed { get; set; }
-
+        public bool Executed { get; private set; }
+        
+        public CommandAclStatus AclStatus { get; private set; }
+        
         /// <inheritdoc />
         public Semaphore CommandCompletedSemaphore { get; }
 
         /// <summary>
         /// Returns the collection of arguments passed to this command
         /// </summary>
-        protected IList<string> Arguments { get; }
+        public IList<string> Arguments { get; }
 
         /// <summary>
         /// Returns the name under which this command was invoked
@@ -60,7 +63,7 @@
         /// <summary>
         /// Returns the canonical name of this command
         /// </summary>
-        protected string CommandName
+        public string CommandName
         {
             get
             {
@@ -89,7 +92,7 @@
         public IUser User { get; }
 
         protected ILogger Logger { get; }
-        protected IIrcClient Client { get; }
+        public IIrcClient Client { get; }
 
         protected virtual IEnumerable<CommandResponse> Execute()
         {
@@ -115,6 +118,7 @@
                     this.Logger.InfoFormat("Access denied command-globally for user {0}", this.User);
 
                     var accessDeniedResponses = this.OnAccessDenied() ?? new List<CommandResponse>();
+                    this.AclStatus = CommandAclStatus.DeniedMain;
                     return accessDeniedResponses;
                 }
 
@@ -143,6 +147,7 @@
                     this.Logger.InfoFormat("Access denied subcommand-locally for user {0}", this.User);
 
                     var accessDeniedResponses = this.OnAccessDenied() ?? new List<CommandResponse>();
+                    this.AclStatus = CommandAclStatus.DeniedSubcommand;
                     return accessDeniedResponses;
                 }
 
@@ -154,6 +159,8 @@
                 try
                 {
                     this.OnPreRun();
+
+                    this.AclStatus = CommandAclStatus.Allowed;
                     
                     var commandResponses = (IEnumerable<CommandResponse>) subCommandMethod.Invoke(this, null);
 

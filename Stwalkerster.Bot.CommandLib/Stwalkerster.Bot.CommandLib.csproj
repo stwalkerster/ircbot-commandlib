@@ -57,6 +57,8 @@
     <Compile Include="Attributes\RequiredArgumentsAttribute.cs" />
     <Compile Include="Attributes\SubcommandInvocationAttribute.cs" />
     <Compile Include="Commands\AccessControl\MyFlagsCommand.cs" />
+    <Compile Include="Commands\CommandUtilities\Models\CommandAclStatus.cs" />
+    <Compile Include="Commands\CommandUtilities\Models\CommandExecutedEventArgs.cs" />
     <Compile Include="Commands\CommandUtilities\Models\HelpMessage.cs" />
     <Compile Include="Commands\CommandUtilities\Models\RedirectionResult.cs" />
     <Compile Include="Commands\CommandUtilities\CommandBase.cs" />

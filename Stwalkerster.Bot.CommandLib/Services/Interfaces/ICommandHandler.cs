@@ -1,5 +1,7 @@
 ﻿namespace Stwalkerster.Bot.CommandLib.Services.Interfaces
 {
+    using System;
+    using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
     using Stwalkerster.IrcClient.Events;
 
     /// <summary>
@@ -17,5 +19,7 @@
         /// The e.
         /// </param>
         void OnMessageReceived(object sender, MessageReceivedEventArgs e);
+
+        event EventHandler<CommandExecutedEventArgs> CommandExecuted;
     }
 }
