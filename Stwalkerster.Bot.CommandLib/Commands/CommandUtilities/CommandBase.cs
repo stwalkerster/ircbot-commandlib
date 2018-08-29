@@ -38,13 +38,11 @@
             this.CommandSource = commandSource;
             this.User = user;
             this.Arguments = arguments;
-            this.AclStatus = CommandAclStatus.Prerun;
         }
 
         public bool Executed { get; private set; }
-        
-        public CommandAclStatus AclStatus { get; private set; }
-        
+        public CommandExecutionStatus ExecutionStatus { get; private set; }
+
         /// <inheritdoc />
         public Semaphore CommandCompletedSemaphore { get; }
 
@@ -112,13 +110,15 @@
 
             try
             {
+                this.ExecutionStatus = new CommandExecutionStatus();
+                
                 // Test global access for this command
                 if (!this.AllowedMainCommand())
                 {
                     this.Logger.InfoFormat("Access denied command-globally for user {0}", this.User);
 
                     var accessDeniedResponses = this.OnAccessDenied() ?? new List<CommandResponse>();
-                    this.AclStatus = CommandAclStatus.DeniedMain;
+                    this.ExecutionStatus.AclStatus = CommandAclStatus.DeniedMain;
                     return accessDeniedResponses;
                 }
 
@@ -147,7 +147,7 @@
                     this.Logger.InfoFormat("Access denied subcommand-locally for user {0}", this.User);
 
                     var accessDeniedResponses = this.OnAccessDenied() ?? new List<CommandResponse>();
-                    this.AclStatus = CommandAclStatus.DeniedSubcommand;
+                    this.ExecutionStatus.AclStatus = CommandAclStatus.DeniedSubcommand;
                     return accessDeniedResponses;
                 }
 
@@ -160,7 +160,7 @@
                 {
                     this.OnPreRun();
 
-                    this.AclStatus = CommandAclStatus.Allowed;
+                    this.ExecutionStatus.AclStatus = CommandAclStatus.Allowed;
                     
                     var commandResponses = (IEnumerable<CommandResponse>) subCommandMethod.Invoke(this, null);
 
@@ -333,6 +333,11 @@
         private bool AllowedMainCommand()
         {
             var flagAttributes = this.GetType().GetAttributes<CommandFlagAttribute>().ToList();
+
+            this.ExecutionStatus.MainFlags = flagAttributes.Aggregate(
+                string.Empty,
+                (seed, item) => seed + item.Flag + (item.GlobalOnly ? "*" : string.Empty));
+            
             foreach (var attribute in flagAttributes)
             {
                 var result = this.FlagService.UserHasFlag(
@@ -359,6 +364,11 @@
         private bool AllowedSubcommand(MethodInfo info)
         {
             var flagAttributes = info.GetAttributes<CommandFlagAttribute>().ToList();
+           
+            this.ExecutionStatus.SubcommandFlags = flagAttributes.Aggregate(
+                string.Empty,
+                (seed, item) => seed + item.Flag + (item.GlobalOnly ? "*" : string.Empty));
+            
             foreach (var attribute in flagAttributes)
             {
                 var result = this.FlagService.UserHasFlag(

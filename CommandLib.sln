@@ -1,5 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{59D5FBFC-4C79-43B7-AA86-7A2642B097AA}"
+	ProjectSection(SolutionItems) = preProject
+		.teamcity/Irc_CommandLib/buildTypes/Irc_CommandLib_StwalkersterBotCommandLib.xml = .teamcity/Irc_CommandLib/buildTypes/Irc_CommandLib_StwalkersterBotCommandLib.xml
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stwalkerster.Bot.CommandLib", "Stwalkerster.Bot.CommandLib\Stwalkerster.Bot.CommandLib.csproj", "{727151DD-DB3A-4CF0-850B-9233437DE6DA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stwalkerster.Bot.CommandLib.Tests", "Stwalkerster.Bot.CommandLib.Tests\Stwalkerster.Bot.CommandLib.Tests.csproj", "{4F479420-7615-4D0F-B105-623313BB1605}"

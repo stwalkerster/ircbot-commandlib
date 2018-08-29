@@ -59,6 +59,7 @@
     <Compile Include="Commands\AccessControl\MyFlagsCommand.cs" />
     <Compile Include="Commands\CommandUtilities\Models\CommandAclStatus.cs" />
     <Compile Include="Commands\CommandUtilities\Models\CommandExecutedEventArgs.cs" />
+    <Compile Include="Commands\CommandUtilities\Models\CommandExecutionStatus.cs" />
     <Compile Include="Commands\CommandUtilities\Models\HelpMessage.cs" />
     <Compile Include="Commands\CommandUtilities\Models\RedirectionResult.cs" />
     <Compile Include="Commands\CommandUtilities\CommandBase.cs" />
@@ -86,12 +87,6 @@
     <Compile Include="Services\Interfaces\IFlagService.cs" />
     <Compile Include="Startup\Installer.cs" />
     <Compile Include="TypedFactories\ICommandTypedFactory.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Stwalkerster.Extensions\Stwalkerster.Extensions.csproj">
-      <Project>{452248af-32ab-4a57-85fa-fb6173f6ce41}</Project>
-      <Name>Stwalkerster.Extensions</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -18,7 +18,7 @@ namespace Stwalkerster.Bot.CommandLib.Testbot.Service
 
         private void OnCommandExecuted(object sender, CommandExecutedEventArgs args)
         {
-            this.logger.InfoFormat("Command {0} invoked, result {1}", args.Command.InvokedAs, args.Command.AclStatus);
+            this.logger.InfoFormat("Command {0} invoked, result {1}", args.Command.InvokedAs, args.Command.ExecutionStatus.AclStatus);
         }
 
         public void Start()

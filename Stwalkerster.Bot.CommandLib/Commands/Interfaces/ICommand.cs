@@ -21,7 +21,7 @@
         Semaphore CommandCompletedSemaphore { get; }
 
         bool Executed { get; }
-        CommandAclStatus AclStatus { get; }
+        CommandExecutionStatus ExecutionStatus { get; }
 
         /// <summary>
         /// Returns the collection of arguments passed to this command
