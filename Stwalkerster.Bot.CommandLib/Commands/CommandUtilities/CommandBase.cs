@@ -38,6 +38,8 @@
             this.CommandSource = commandSource;
             this.User = user;
             this.Arguments = arguments;
+            
+            this.ExecutionStatus = new CommandExecutionStatus();
         }
 
         public bool Executed { get; private set; }
@@ -110,8 +112,6 @@
 
             try
             {
-                this.ExecutionStatus = new CommandExecutionStatus();
-                
                 // Test global access for this command
                 if (!this.AllowedMainCommand())
                 {
