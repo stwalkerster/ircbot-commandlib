@@ -2,7 +2,7 @@
 {
     using System;
 
-    internal class CommandRegistration
+    public class CommandRegistration
     {
         public CommandRegistration(string channel, Type type)
         {

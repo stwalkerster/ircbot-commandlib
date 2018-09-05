@@ -98,5 +98,6 @@
         Type GetRegisteredCommand(string commandName);
         
         Type GetRegisteredCommand(string commandName, string destination);
+        Dictionary<string, Dictionary<CommandRegistration, Type>> GetCommandRegistrations();
     }
 }

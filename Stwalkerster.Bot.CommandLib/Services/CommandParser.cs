@@ -5,6 +5,7 @@
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
+    using System.Runtime.Remoting.Messaging;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -304,6 +305,26 @@
         public void Release(ICommand command)
         {
             this.commandFactory.Release(command);
+        }
+
+        public Dictionary<string, Dictionary<CommandRegistration, Type>> GetCommandRegistrations()
+        {
+            var result = new Dictionary<string, Dictionary<CommandRegistration, Type>>(this.commands.Count);
+
+            foreach (var triggerEntry in this.commands)
+            {
+                var regTriggers = new Dictionary<CommandRegistration, Type>(triggerEntry.Value.Count);
+                foreach (var regEntry in triggerEntry.Value)
+                {
+                    regTriggers.Add(
+                        new CommandRegistration(regEntry.Key.Channel, regEntry.Key.Type),
+                        regEntry.Key.Type);
+                }
+
+                result.Add(triggerEntry.Key, regTriggers);
+            }
+
+            return result;
         }
 
         #endregion

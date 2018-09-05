@@ -17,6 +17,8 @@
     [CommandFlag("S")]
     public class TestCommand : CommandBase
     {
+        private readonly ICommandParser parser;
+
         public TestCommand(
             string commandSource,
             IUser user,
@@ -24,7 +26,8 @@
             ILogger logger,
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
-            IIrcClient client) : base(
+            IIrcClient client,
+            ICommandParser parser) : base(
             commandSource,
             user,
             arguments,
@@ -33,6 +36,7 @@
             configurationProvider,
             client)
         {
+            this.parser = parser;
         }
 
         protected override void OnPreRun()
@@ -41,6 +45,8 @@
 
         protected override IEnumerable<CommandResponse> Execute()
         {
+            this.parser.GetCommandRegistrations();
+            
             yield return new CommandResponse
             {
                 Message = "Ohai there " + this.User + " in " + this.CommandSource
