@@ -39,8 +39,11 @@
             this.parser = parser;
         }
 
-        protected override void OnPreRun()
+        protected override IEnumerable<CommandResponse> OnPreRun(out bool abort)
         {
+            abort = false;
+
+            return null;
         }
 
         protected override IEnumerable<CommandResponse> Execute()

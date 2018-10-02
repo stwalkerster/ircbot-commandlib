@@ -99,8 +99,10 @@
             throw new CommandInvocationException();
         }
 
-        protected virtual void OnPreRun()
+        protected virtual IEnumerable<CommandResponse> OnPreRun(out bool abort)
         {
+            abort = false;
+            return null;
         }
         
         public IEnumerable<CommandResponse> Run()
@@ -158,7 +160,12 @@
 
                 try
                 {
-                    this.OnPreRun();
+                    var preRunResponses = this.OnPreRun(out var abort) ?? new List<CommandResponse>();
+
+                    if (abort)
+                    {
+                        return preRunResponses;
+                    }
 
                     this.ExecutionStatus.AclStatus = CommandAclStatus.Allowed;
                     
@@ -169,7 +176,7 @@
                     var completedResponses = this.OnCompleted() ?? new List<CommandResponse>();
 
                     // Resolve the list into a concrete list before committing the transaction.
-                    var responses = commandResponses.Concat(completedResponses).ToList();
+                    var responses = preRunResponses.Concat(commandResponses.Concat(completedResponses)).ToList();
 
                     return responses;
                 }
