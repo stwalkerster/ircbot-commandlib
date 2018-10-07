@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="afe48d57-f7cb-406a-8549-de14162f74d4" xsi:noNamespaceSchemaLocation="http://www.jetbrains.com/teamcity/schemas/2018.1/project-config.xsd">
-  <name>Stwalkerster.Bot.MediaWikiLib</name>
-  <description>MediaWiki Library</description>
+  <name>Stwalkerster.Bot.CommandLib</name>
+  <description>IRC Bot Command Library</description>
   <settings>
     <options>
       <option name="buildNumberPattern" value="%version%.%build.counter%" />
