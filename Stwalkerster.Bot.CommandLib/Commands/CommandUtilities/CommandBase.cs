@@ -128,19 +128,13 @@
 
                 if (subCommandMethod == null)
                 {
-                    this.Logger.ErrorFormat(
-                        "Error locating executable method for command {0} with args: {1}",
+                    this.Logger.WarnFormat(
+                        "Unable to locate an executable method for command {0} with args: {1}",
                         this.CommandName,
                         this.OriginalArguments);
                     
-                    return new List<CommandResponse>
-                    {
-                        new CommandResponse
-                        {
-                            Destination = CommandResponseDestination.PrivateMessage,
-                            Message = "Error encountered while running command."
-                        }
-                    };
+                    var missingSubcommandResponses = this.OnMissingSubcommand() ?? new List<CommandResponse>();
+                    return missingSubcommandResponses;
                 }
                 
                 // Test local access for this command
@@ -478,6 +472,18 @@
             return new List<CommandResponse> {response};
         }
 
+        protected virtual IEnumerable<CommandResponse> OnMissingSubcommand()
+        {
+            var response = new CommandResponse
+            {
+                Destination = CommandResponseDestination.PrivateMessage,
+                Message = "Unable to find the sub-command you requested, or a default handler for this command.",
+                IgnoreRedirection = true
+            };
+
+            return new List<CommandResponse> {response};
+        }
+        
         protected virtual IEnumerable<CommandResponse> OnCompleted()
         {
             return null;
