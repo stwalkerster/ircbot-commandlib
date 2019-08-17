@@ -57,6 +57,11 @@
         /// Returns the name under which this command was invoked
         /// </summary>
         public string InvokedAs { get; internal set; }
+        
+        /// <summary>
+        /// Returns the subcommand which was invoked
+        /// </summary>
+        public string SubCommand { get; internal set; }
 
         protected IFlagService FlagService { get; }
 
@@ -335,7 +340,8 @@
                     "Invoking method {0} as subcommand for command {1}",
                     info.Name,
                     this.InvokedAs);
-                    
+
+                this.SubCommand = attr.CommandName.ToLower();
                 this.Arguments.RemoveAt(0);
 
                 return info;

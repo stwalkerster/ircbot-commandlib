@@ -54,6 +54,11 @@
 
         IIrcClient Client { get; }
 
+        /// <summary>
+        /// Returns the subcommand which was invoked
+        /// </summary>
+        string SubCommand { get; }
+
         IEnumerable<CommandResponse> HelpMessage(string helpKey = null);
 
         /// <summary>
