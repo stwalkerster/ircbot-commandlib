@@ -160,13 +160,27 @@
 
                 try
                 {
-                    var preRunResponses = this.OnPreRun(out var abort) ?? new List<CommandResponse>();
+                    IEnumerable<CommandResponse> preRunResponses;
+                    bool abort;
+                    
+                    try
+                    {
+                        preRunResponses = this.OnPreRun(out abort) ?? new List<CommandResponse>();
+                    }
+                    catch (CommandAccessDeniedException ex)
+                    {
+                        this.Logger.InfoFormat("Access denied on pre-run for user {0}", this.User);
+
+                        var accessDeniedResponses = this.OnAccessDenied() ?? new List<CommandResponse>();
+                        this.ExecutionStatus.AclStatus = CommandAclStatus.DeniedPrerun;
+                        return accessDeniedResponses;
+                    }
 
                     if (abort)
                     {
                         return preRunResponses;
                     }
-
+                    
                     this.ExecutionStatus.AclStatus = CommandAclStatus.Allowed;
                     
                     var commandResponses = (IEnumerable<CommandResponse>) subCommandMethod.Invoke(this, null);

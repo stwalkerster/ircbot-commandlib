@@ -69,6 +69,7 @@
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\Interfaces\ICommand.cs" />
     <Compile Include="Exceptions\ArgumentCountException.cs" />
+    <Compile Include="Exceptions\CommandAccessDeniedException.cs" />
     <Compile Include="Exceptions\CommandErrorException.cs" />
     <Compile Include="Exceptions\CommandExecutionException.cs" />
     <Compile Include="Exceptions\CommandInvocationException.cs" />
