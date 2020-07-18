@@ -5,9 +5,9 @@
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
-    using System.Runtime.Remoting.Messaging;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
+    using Prometheus;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
@@ -24,6 +24,10 @@
     /// </summary>
     public class CommandParser : ICommandParser
     {
+        private static readonly Gauge CommandCount = Metrics.CreateGauge(
+            "irccommandlib_command_registrations",
+            "Number of command registrations");
+        
         #region Fields
 
         private readonly IConfigurationProvider configProvider;
@@ -375,6 +379,8 @@
 
             this.commands[commandName].Add(new CommandRegistration(channel, implementation), implementation);
             this.logger.DebugFormat("Registered command {0}", implementation.FullName);
+            
+            CommandCount.Set(this.commands.Count);
         }
 
         public void UnregisterCommand(string commandName)
@@ -398,6 +404,8 @@
             }
 
             registrations.Remove(cr);
+            
+            CommandCount.Set(this.commands.Count);
         }
 
         public Type GetRegisteredCommand(string commandName)

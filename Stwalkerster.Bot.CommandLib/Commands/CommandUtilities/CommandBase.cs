@@ -7,6 +7,7 @@
     using System.Threading;
     using Castle.Core.Internal;
     using Castle.Core.Logging;
+    using Prometheus;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -19,6 +20,11 @@
 
     public abstract class CommandBase : ICommand
     {
+        private static readonly Counter CommandExecutions = Metrics.CreateCounter(
+            "irccommandlib_command_executions_total",
+            "Number of command executions",
+            new CounterConfiguration {LabelNames = new[] {"result"}});
+        
         private readonly IConfigurationProvider configurationProvider;
 
         protected CommandBase(
@@ -126,6 +132,7 @@
 
                     var accessDeniedResponses = this.OnAccessDenied() ?? new List<CommandResponse>();
                     this.ExecutionStatus.AclStatus = CommandAclStatus.DeniedMain;
+                    CommandExecutions.WithLabels("globally-denied").Inc();
                     return accessDeniedResponses;
                 }
 
@@ -139,6 +146,7 @@
                         this.OriginalArguments);
                     
                     var missingSubcommandResponses = this.OnMissingSubcommand() ?? new List<CommandResponse>();
+                    CommandExecutions.WithLabels("no-subcommand").Inc();
                     return missingSubcommandResponses;
                 }
                 
@@ -149,6 +157,7 @@
 
                     var accessDeniedResponses = this.OnAccessDenied() ?? new List<CommandResponse>();
                     this.ExecutionStatus.AclStatus = CommandAclStatus.DeniedSubcommand;
+                    CommandExecutions.WithLabels("subcommand-denied").Inc();
                     return accessDeniedResponses;
                 }
 
@@ -172,6 +181,7 @@
 
                         var accessDeniedResponses = this.OnAccessDenied() ?? new List<CommandResponse>();
                         this.ExecutionStatus.AclStatus = CommandAclStatus.DeniedPrerun;
+                        CommandExecutions.WithLabels("prerun-denied").Inc();
                         return accessDeniedResponses;
                     }
 
@@ -181,6 +191,7 @@
                     }
                     
                     this.ExecutionStatus.AclStatus = CommandAclStatus.Allowed;
+                    CommandExecutions.WithLabels("allowed").Inc();
                     
                     var commandResponses = (IEnumerable<CommandResponse>) subCommandMethod.Invoke(this, null);
 
