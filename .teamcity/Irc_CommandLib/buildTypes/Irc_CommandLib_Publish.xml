@@ -12,7 +12,7 @@
     <requirements />
     <build-triggers />
     <artifact-dependencies>
-      <dependency id="ARTIFACT_DEPENDENCY_8" sourceBuildTypeId="Irc_StwalkersterIrcClient_StwalkersterIrcClient" cleanDestination="true">
+      <dependency id="ARTIFACT_DEPENDENCY_8" sourceBuildTypeId="Irc_CommandLib_StwalkersterBotCommandLib" cleanDestination="true">
         <revisionRule name="sameChainOrLastFinished" revision="latest.sameChainOrLastFinished" />
         <artifact sourcePath="*.nupkg" />
       </dependency>
