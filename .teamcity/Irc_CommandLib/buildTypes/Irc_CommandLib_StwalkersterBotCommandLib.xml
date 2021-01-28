@@ -4,7 +4,7 @@
   <description>IRC Bot Command Library</description>
   <settings ref="DotNetLibrary">
     <parameters>
-      <param name="nunitRunner" value="3.11.1" />
+      <param name="nunitRunner" value="3.12" />
       <param name="primaryProjectName" value="Stwalkerster.Bot.CommandLib" />
       <param name="solutionName" value="CommandLib" />
       <param name="version" value="13.4" />
