@@ -4,7 +4,6 @@
   <description>IRC Bot Command Library</description>
   <settings ref="DotNetCoreLibrary">
     <parameters>
-      <param name="extraParameters" value="" />
       <param name="primaryProjectName" value="Stwalkerster.Bot.CommandLib" />
       <param name="solutionName" value="CommandLib" />
       <param name="version" value="14.0" spec="text display='normal' description='Two or three-part version number. The build counter will be appended to the end.' validationMode='any'" />
