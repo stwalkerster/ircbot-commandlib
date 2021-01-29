@@ -2,10 +2,10 @@
 {
     using Castle.MicroKernel.Registration;
     using Castle.Windsor;
-    using Castle.Windsor.Installer;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Interfaces;
+    using Installer = Stwalkerster.Bot.CommandLib.Testbot.Startup.Installer;
 
     public class Program : IApplication
     {
@@ -26,13 +26,15 @@
                             clientName: "TestClient"
                         )));
             
-            container.Install(FromAssembly.This());
+            container.Install(new Installer());
 
             var app = container.Resolve<IApplication>();
         }
 
-        public Program(IIrcClient client)
+        public Program(IIrcClient client, ICommandHandler commandHandler)
         {
+            client.ReceivedMessage += commandHandler.OnMessageReceived;
+            
             client.JoinChannel("##stwalkerster-development");
         }
         
