@@ -2,20 +2,14 @@
 <build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="ee9edbe4-8fcf-4795-9e43-62fd19280782" paused="true" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2020.1/project-config.xsd">
   <name>Stwalkerster.Bot.CommandLib</name>
   <description>IRC Bot Command Library</description>
-  <settings>
-    <options>
-      <option name="buildNumberPattern" value="%version%.%build.counter%%versiontag%" />
-    </options>
+  <settings ref="DotNetCoreLibrary">
     <parameters>
       <param name="extraParameters" value="" />
       <param name="nunitRunner" value="3.12.0" />
-      <param name="pathPrefix" value="" />
       <param name="primaryProjectName" value="Stwalkerster.Bot.CommandLib" />
       <param name="solutionName" value="CommandLib" />
-      <param name="system.Configuration" value="Release" />
-      <param name="testProjectName" value="%primaryProjectName%.Tests" />
-      <param name="version" value="13.4" />
-      <param name="versiontag" value="" />
+      <param name="version" value="14.0" spec="text display='normal' description='Two or three-part version number. The build counter will be appended to the end.' validationMode='any'" />
+      <param name="versiontag" value="-beta" spec="text description='e.g. &quot;-alpha&quot;' validationMode='any' display='normal'" />
     </parameters>
     <build-runners>
       <runner id="RUNNER_14" name="" type="jb.nuget.installer">
@@ -60,15 +54,7 @@
       <vcs-entry-ref root-id="Irc_BotCommandlib" />
     </vcs-settings>
     <requirements />
-    <build-triggers>
-      <build-trigger id="vcsTrigger" type="vcsTrigger">
-        <parameters>
-          <param name="groupCheckinsByCommitter" value="true" />
-          <param name="perCheckinTriggering" value="true" />
-          <param name="quietPeriodMode" value="DO_NOT_USE" />
-        </parameters>
-      </build-trigger>
-    </build-triggers>
+    <build-triggers />
     <build-extensions>
       <extension id="JetBrains.AssemblyInfo" type="JetBrains.AssemblyInfo">
         <parameters>
