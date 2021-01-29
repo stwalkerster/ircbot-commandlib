@@ -7,7 +7,7 @@
       <param name="primaryProjectName" value="Stwalkerster.Bot.CommandLib" />
       <param name="solutionName" value="CommandLib" />
       <param name="version" value="14.0" spec="text display='normal' description='Two or three-part version number. The build counter will be appended to the end.' validationMode='any'" />
-      <param name="versiontag" value="-beta" spec="text description='e.g. &quot;-alpha&quot;' validationMode='any' display='normal'" />
+      <param name="versiontag" value="" spec="text description='e.g. &quot;-alpha&quot;' validationMode='any' display='normal'" />
     </parameters>
     <build-runners />
     <vcs-settings>
