@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <OutputPath>../Stwalkerster.Bot.CommandLib.Testbot/bin/Debug/</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <OutputPath>../Stwalkerster.Bot.CommandLib.Testbot/bin/Release/</OutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Stwalkerster.Bot.CommandLib.Testbot\Stwalkerster.Bot.CommandLib.Testbot.csproj" />
+      <ProjectReference Include="..\Stwalkerster.Bot.CommandLib\Stwalkerster.Bot.CommandLib.csproj" />
+    </ItemGroup>
+
+</Project>

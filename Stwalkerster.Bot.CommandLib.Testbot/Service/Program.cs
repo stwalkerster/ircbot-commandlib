@@ -1,7 +1,10 @@
 ﻿namespace Stwalkerster.Bot.CommandLib.Testbot.Service
 {
+    using System.IO;
+    using System.Reflection;
     using Castle.MicroKernel.Registration;
     using Castle.Windsor;
+    using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Interfaces;
@@ -25,6 +28,9 @@
                             ssl: true,
                             clientName: "TestClient"
                         )));
+
+            var a = Assembly.LoadFile(Path.GetFullPath("Stwalkerster.Bot.CommandLib.Testbot.Commands.dll"));
+            container.Register(Classes.FromAssembly(a).BasedOn<ICommand>());
             
             container.Install(new Installer());
 

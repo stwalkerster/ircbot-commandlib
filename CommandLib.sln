@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stwalkerster.Bot.CommandLib
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stwalkerster.Bot.CommandLib.Tests", "Stwalkerster.Bot.CommandLib.Tests\Stwalkerster.Bot.CommandLib.Tests.csproj", "{73DFE016-5217-45C0-B34B-8E7197B6CED0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stwalkerster.Bot.CommandLib.Testbot.Commands", "Stwalkerster.Bot.CommandLib.Testbot.Commands\Stwalkerster.Bot.CommandLib.Testbot.Commands.csproj", "{61A82844-D53E-4C9B-A4B3-F7F27224BD76}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,5 +31,9 @@ Global
 		{73DFE016-5217-45C0-B34B-8E7197B6CED0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73DFE016-5217-45C0-B34B-8E7197B6CED0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73DFE016-5217-45C0-B34B-8E7197B6CED0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61A82844-D53E-4C9B-A4B3-F7F27224BD76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61A82844-D53E-4C9B-A4B3-F7F27224BD76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61A82844-D53E-4C9B-A4B3-F7F27224BD76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61A82844-D53E-4C9B-A4B3-F7F27224BD76}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
