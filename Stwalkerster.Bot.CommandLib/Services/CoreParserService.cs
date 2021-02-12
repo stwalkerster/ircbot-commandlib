@@ -1,5 +1,6 @@
 namespace Stwalkerster.Bot.CommandLib.Services
 {
+    using System;
     using System.Text.RegularExpressions;
     using Stwalkerster.Bot.CommandLib.Model;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
@@ -8,12 +9,10 @@ namespace Stwalkerster.Bot.CommandLib.Services
     {
         public CommandMessage ParseCommandMessage(string message, string nickname, string commandTrigger)
         {
-            var validCommand =
-                new Regex(
-                    @"^(?:" + commandTrigger + @"(?:(?<botname>(?:" + nickname + @")|(?:"
-                    + nickname.ToLower() + @")) )?(?<cmd>[" + "0-9a-z-_" + "]+)|(?<botname>(?:" + nickname
-                    + @")|(?:" + nickname.ToLower() + @"))[ ,>:](?: )?(?<cmd>[" + "0-9a-z-_"
-                    + "]+))(?: )?(?<args>.*?)(?:\r)?$");
+            var regex =
+                $"^(?:{commandTrigger}|(?:(?<botname>{nickname.ToLower()}|{nickname})(?:[:,] ?| )))(?<cmd>[\\S]+)(?: (?<args>.*?))?$";
+            
+            var validCommand = new Regex(regex);
 
             Match m = validCommand.Match(message);
 
@@ -35,6 +34,22 @@ namespace Stwalkerster.Bot.CommandLib.Services
                 if (m.Groups["args"].Length > 0)
                 {
                     argList = m.Groups["args"].Value.Trim();
+
+                    if (!overrideSilence && string.Equals(commandName, nickname, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        overrideSilence = true;
+                        if (argList.Contains(" "))
+                        {
+                            var strings = argList.Split(new []{' '}, 2);
+                            commandName = strings[0];
+                            argList = strings[1];
+                        }
+                        else
+                        {
+                            commandName = argList;
+                            argList = string.Empty;
+                        }
+                    }
                 }
 
                 var commandMessage = new CommandMessage(commandName, argList, overrideSilence);

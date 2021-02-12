@@ -38,6 +38,10 @@ namespace Stwalkerster.Bot.CommandLib.Tests.Services
                 yield return new TestCaseData("!foo bar baz qux quux", "foo", "bar baz qux quux", false);
                 yield return new TestCaseData("!bar bar baz qux quux", "bar", "bar baz qux quux", false);
                 yield return new TestCaseData("!foo 💩 💩 💩 💩", "foo", "💩 💩 💩 💩", false);
+                yield return new TestCaseData("!💩 💩 💩 💩", "💩", "💩 💩 💩", false);
+                yield return new TestCaseData("!💩 bar baz qux quux", "💩", "bar baz qux quux", false);
+                yield return new TestCaseData("!💩", "💩", "", false);
+                yield return new TestCaseData("!helpmebot 💩", "💩", "", true);
                 yield return new TestCaseData("Helpmebot foo bar baz qux quux", "foo", "bar baz qux quux", true);
                 yield return new TestCaseData("Helpmebot foo bar baz qux quux", "foo", "bar baz qux quux", true);
                 yield return new TestCaseData("Helpmebot: bar bar baz qux quux", "bar", "bar baz qux quux", true);
