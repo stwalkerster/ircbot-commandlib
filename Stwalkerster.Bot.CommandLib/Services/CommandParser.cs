@@ -5,7 +5,6 @@
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
-    using System.Text.RegularExpressions;
     using Castle.Core.Logging;
     using Prometheus;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -37,6 +36,8 @@
         /// </summary>
         private readonly ICommandTypedFactory commandFactory;
 
+        private readonly ICoreParserService coreParserService;
+
         /// <summary>
         /// The command trigger.
         /// </summary>
@@ -56,26 +57,16 @@
 
         #region Constructors and Destructors
 
-        /// <summary>
-        /// Initialises a new instance of the <see cref="CommandParser"/> class.
-        /// </summary>
-        /// <param name="configProvider">
-        /// The configuration provider.
-        /// </param>
-        /// <param name="commandFactory">
-        /// The command Factory.
-        /// </param>
-        /// <param name="logger">
-        /// The logger.
-        /// </param>
         public CommandParser(
             IConfigurationProvider configProvider,
             ICommandTypedFactory commandFactory,
+            ICoreParserService coreParserService,
             ILogger logger)
         {
             this.commandTrigger = configProvider.CommandPrefix;
             this.configProvider = configProvider;
             this.commandFactory = commandFactory;
+            this.coreParserService = coreParserService;
             this.logger = logger;
             
             var types = new List<Type>(); 
@@ -249,55 +240,10 @@
 
             return new RedirectionResult(parsedArguments, targetList, channelList);
         }
-
-        /// <summary>
-        /// The parse command message.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="nickname">
-        /// The nickname.
-        /// </param>
-        /// <returns>
-        /// The <see cref="CommandMessage"/>.
-        /// </returns>
+        
         public CommandMessage ParseCommandMessage(string message, string nickname)
         {
-            var validCommand =
-                new Regex(
-                    @"^(?:" + this.commandTrigger + @"(?:(?<botname>(?:" + nickname + @")|(?:"
-                    + nickname.ToLower() + @")) )?(?<cmd>[" + "0-9a-z-_" + "]+)|(?<botname>(?:" + nickname
-                    + @")|(?:" + nickname.ToLower() + @"))[ ,>:](?: )?(?<cmd>[" + "0-9a-z-_"
-                    + "]+))(?: )?(?<args>.*?)(?:\r)?$");
-
-            Match m = validCommand.Match(message);
-
-            if (m.Length > 0)
-            {
-                var overrideSilence = m.Groups["botname"].Length > 0;
-
-                string commandName;
-                if (m.Groups["cmd"].Length > 0)
-                {
-                    commandName = m.Groups["cmd"].Value.Trim();
-                }
-                else
-                {
-                    return null;
-                }
-
-                var argList = string.Empty;
-                if (m.Groups["args"].Length > 0)
-                {
-                    argList = m.Groups["args"].Value.Trim();
-                }
-
-                var commandMessage = new CommandMessage(commandName, argList, overrideSilence);
-                return commandMessage;
-            }
-
-            return null;
+            return this.coreParserService.ParseCommandMessage(message, nickname, this.commandTrigger);
         }
 
         /// <summary>
