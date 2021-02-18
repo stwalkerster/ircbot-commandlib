@@ -7,6 +7,7 @@
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Services.Logging.Log4netIntegration;
     using Castle.Windsor;
+    using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
     using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Interfaces;
 
@@ -27,7 +28,7 @@
 
             container.Register(
                 Classes.FromAssemblyContaining<Installer>().InNamespace(ns + ".Service").WithServiceAllInterfaces(),
-                Classes.FromAssemblyContaining<Installer>().InNamespace(ns + ".Command").LifestyleTransient(),
+                Classes.FromAssemblyContaining<Installer>().BasedOn<ICommand>().LifestyleTransient(),
                 Component.For<ISupportHelper>().ImplementedBy<SupportHelper>(),
                 Component.For<IIrcClient>().ImplementedBy<IrcClient>()
             );

@@ -30,7 +30,7 @@
                         )));
 
             var a = Assembly.LoadFile(Path.GetFullPath("Stwalkerster.Bot.CommandLib.Testbot.Commands.dll"));
-            container.Register(Classes.FromAssembly(a).BasedOn<ICommand>());
+            container.Register(Classes.FromAssembly(a).BasedOn<ICommand>().LifestyleTransient());
             
             container.Install(new Installer());
 

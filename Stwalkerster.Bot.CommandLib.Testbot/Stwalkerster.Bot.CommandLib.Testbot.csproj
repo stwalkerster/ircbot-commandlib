@@ -23,7 +23,15 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Command" />
+      <Compile Remove="Command\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Command\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Command\**" />
     </ItemGroup>
 
 </Project>
