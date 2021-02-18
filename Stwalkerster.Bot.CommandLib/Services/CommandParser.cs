@@ -131,9 +131,23 @@
             var redirectionResult = this.ParseRedirection(originalArguments);
             IList<string> arguments = redirectionResult.Arguments.ToList();
 
-            var commandName = commandMessage.CommandName.ToLower(CultureInfo.InvariantCulture);
+            var commandName = commandMessage.CommandName;
             var commandType = this.GetRegisteredCommand(commandName, destination);
 
+            if (commandType == null)
+            {
+                // no exact match try munging to lower
+                commandName = commandName.ToLower(CultureInfo.InvariantCulture);
+                commandType = this.GetRegisteredCommand(commandName, destination);
+            }
+            
+            if (commandType == null)
+            {
+                // no exact match or lowercase match, try munging to upper
+                commandName = commandName.ToUpper(CultureInfo.InvariantCulture);
+                commandType = this.GetRegisteredCommand(commandName, destination);
+            }
+            
             if (commandType != null)
             {   
                 this.logger.InfoFormat("Creating command object of type {0}", commandType);

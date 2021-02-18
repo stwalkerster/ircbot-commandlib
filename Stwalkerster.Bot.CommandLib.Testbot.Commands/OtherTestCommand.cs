@@ -12,17 +12,15 @@
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    [CommandInvocation("test")]
-    [CommandInvocation("foo")]
-    [CommandInvocation("coi")]
-    [CommandInvocation("💩")]
-    
+    [CommandInvocation("COI")]
+    [CommandInvocation("BAR")]
+
     [CommandFlag("S")]
-    public class TestCommand : CommandBase
+    public class OtherTestCommand : CommandBase
     {
         private readonly ICommandParser parser;
 
-        public TestCommand(
+        public OtherTestCommand(
             string commandSource,
             IUser user,
             IList<string> arguments,
@@ -55,18 +53,7 @@
             
             yield return new CommandResponse
             {
-                Message = "Ohai there " + this.User + " in " + this.CommandSource
-            };
-        }
-
-        [SubcommandInvocation("bye")]
-        [CommandFlag("A", true)]
-        [CommandFlag("B")]
-        protected IEnumerable<CommandResponse> RunBye()
-        {
-            yield return new CommandResponse
-            {
-                Message = "BYE THEN " + this.User + "!"
+                Message = "Not a test, really?"
             };
         }
     }
