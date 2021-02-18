@@ -13,7 +13,7 @@
     </PropertyGroup>
     <ItemGroup>
       <PackageReference Include="Castle.Windsor" Version="4.1.1" />
-      <PackageReference Include="Stwalkerster.IrcClient" Version="9.0.70" />
+      <PackageReference Include="Stwalkerster.IrcClient" Version="9.1.81" />
     </ItemGroup>
 
 </Project>
