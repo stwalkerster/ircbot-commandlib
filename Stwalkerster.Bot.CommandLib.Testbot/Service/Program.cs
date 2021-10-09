@@ -19,8 +19,8 @@
                 Component.For<IIrcConfiguration>()
                     .Instance(
                         new IrcConfiguration(
-                            hostname: "irc.freenode.net",
-                            port: 7000,
+                            hostname: "irc.libera.chat",
+                            port: 6697,
                             authToServices: false,
                             nickname: "stwtestbot",
                             username: "stwtestbot",
