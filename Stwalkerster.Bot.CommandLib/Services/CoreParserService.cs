@@ -7,10 +7,18 @@ namespace Stwalkerster.Bot.CommandLib.Services
 
     public class CoreParserService : ICoreParserService
     {
-        public CommandMessage ParseCommandMessage(string message, string nickname, string commandTrigger)
+        public CommandMessage ParseCommandMessage(string message, string nickname, string commandTrigger, bool isDirect)
         {
+            var directSkip = "";
+            var overrideSilence = false;
+            if (isDirect)
+            {
+                directSkip = "?";
+                overrideSilence = true;
+            }
+            
             var regex =
-                $"^(?:{commandTrigger}|(?:(?<botname>{nickname.ToLower()}|{nickname})(?:[:,] ?| )))(?<cmd>[\\S]+)(?: (?<args>.*?))?$";
+                $"^(?:{commandTrigger}|(?:(?<botname>{nickname.ToLower()}|{nickname})(?:[:,] ?| ))){directSkip}(?<cmd>[\\S]+)(?: (?<args>.*?))?$";
             
             var validCommand = new Regex(regex);
 
@@ -18,7 +26,7 @@ namespace Stwalkerster.Bot.CommandLib.Services
 
             if (m.Length > 0)
             {
-                var overrideSilence = m.Groups["botname"].Length > 0;
+                overrideSilence |= m.Groups["botname"].Length > 0;
 
                 string commandName;
                 if (m.Groups["cmd"].Length > 0)
@@ -35,7 +43,7 @@ namespace Stwalkerster.Bot.CommandLib.Services
                 {
                     argList = m.Groups["args"].Value.Trim();
 
-                    if (!overrideSilence && string.Equals(commandName, nickname, StringComparison.CurrentCultureIgnoreCase))
+                    if (string.Equals(commandName, nickname, StringComparison.CurrentCultureIgnoreCase))
                     {
                         overrideSilence = true;
                         if (argList.Contains(" "))

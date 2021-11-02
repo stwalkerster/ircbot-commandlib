@@ -83,7 +83,7 @@
         /// <param name="state">
         /// The state.
         /// </param>
-        private void ProcessMessageAsync(object state)
+        private async void ProcessMessageAsync(object state)
         {
             var eventArgs = (MessageReceivedEventArgs)state;
 
@@ -91,7 +91,10 @@
 
             string message = eventArgs.Message;
 
-            var commandMessage = this.commandParser.ParseCommandMessage(message, client.Nickname);
+            var commandMessage = this.commandParser.ParseCommandMessage(
+                message,
+                client.Nickname,
+                eventArgs.Target == client.Nickname);
 
             var command = this.commandParser.GetCommand(
                 commandMessage,

@@ -50,10 +50,11 @@
         /// <param name="nickname">
         /// The nickname of the IRC client.
         /// </param>
+        /// <param name="isDirect"></param>
         /// <returns>
         /// The <see cref="CommandMessage"/>.
         /// </returns>
-        CommandMessage ParseCommandMessage(string message, string nickname);
+        CommandMessage ParseCommandMessage(string message, string nickname, bool isDirect);
 
         /// <summary>
         /// The parse redirection.

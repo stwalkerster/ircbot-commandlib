@@ -255,9 +255,9 @@
             return new RedirectionResult(parsedArguments, targetList, channelList);
         }
         
-        public CommandMessage ParseCommandMessage(string message, string nickname)
+        public CommandMessage ParseCommandMessage(string message, string nickname, bool isDirect)
         {
-            return this.coreParserService.ParseCommandMessage(message, nickname, this.commandTrigger);
+            return this.coreParserService.ParseCommandMessage(message, nickname, this.commandTrigger, isDirect);
         }
 
         /// <summary>
