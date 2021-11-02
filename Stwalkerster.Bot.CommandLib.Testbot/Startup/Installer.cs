@@ -7,6 +7,7 @@
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Services.Logging.Log4netIntegration;
     using Castle.Windsor;
+    using Microsoft.Extensions.Logging;
     using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
     using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Interfaces;
@@ -15,6 +16,8 @@
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
+            var loggerFactory = new LoggerFactory().AddLog4Net("log4net.xml");
+            
             // Facilities
             container.AddFacility<LoggingFacility>(f => f.LogUsing<Log4netFactory>().WithConfig("log4net.xml"));
             container.AddFacility<StartableFacility>(f => f.DeferredStart());
@@ -27,6 +30,8 @@
             string ns = "Stwalkerster.Bot.CommandLib.Testbot";
 
             container.Register(
+                Component.For<ILoggerFactory>().Instance(loggerFactory),
+                Component.For<ILogger<SupportHelper>>().UsingFactoryMethod(loggerFactory.CreateLogger<SupportHelper>),
                 Classes.FromAssemblyContaining<Installer>().InNamespace(ns + ".Service").WithServiceAllInterfaces(),
                 Classes.FromAssemblyContaining<Installer>().BasedOn<ICommand>().LifestyleTransient(),
                 Component.For<ISupportHelper>().ImplementedBy<SupportHelper>(),
