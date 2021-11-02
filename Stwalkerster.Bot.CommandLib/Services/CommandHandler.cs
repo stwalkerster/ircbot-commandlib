@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Threading;
-    using Castle.Core.Logging;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
@@ -23,11 +22,6 @@
         /// </summary>
         private readonly ICommandParser commandParser;
 
-        /// <summary>
-        /// The logger.
-        /// </summary>
-        private readonly ILogger logger;
-
         private readonly IConfigurationProvider configProvider;
 
         #endregion
@@ -42,14 +36,10 @@
         /// <param name="commandParser">
         /// The command parser.
         /// </param>
-        /// <param name="logger">
-        /// The logger.
-        /// </param>
         /// <param name="configProvider"></param>
-        public CommandHandler(ICommandParser commandParser, ILogger logger, IConfigurationProvider configProvider)
+        public CommandHandler(ICommandParser commandParser, IConfigurationProvider configProvider)
         {
             this.commandParser = commandParser;
-            this.logger = logger;
             this.configProvider = configProvider;
         }
 
@@ -83,7 +73,7 @@
         /// <param name="state">
         /// The state.
         /// </param>
-        private async void ProcessMessageAsync(object state)
+        private void ProcessMessageAsync(object state)
         {
             var eventArgs = (MessageReceivedEventArgs)state;
 
@@ -140,7 +130,6 @@
                             break;
                         default:
                             destination = command.CommandSource;
-                            this.logger.Warn("Command response has an unknown destination!");
                             break;
                     }
 

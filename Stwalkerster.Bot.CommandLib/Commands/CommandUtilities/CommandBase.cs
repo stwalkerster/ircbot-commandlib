@@ -175,7 +175,7 @@
                     {
                         preRunResponses = this.OnPreRun(out abort) ?? new List<CommandResponse>();
                     }
-                    catch (CommandAccessDeniedException ex)
+                    catch (CommandAccessDeniedException)
                     {
                         this.Logger.InfoFormat("Access denied on pre-run for user {0}", this.User);
 

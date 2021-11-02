@@ -8,7 +8,10 @@
     using Castle.Services.Logging.Log4netIntegration;
     using Castle.Windsor;
     using Microsoft.Extensions.Logging;
+    using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
+    using Stwalkerster.Bot.CommandLib.Services;
+    using Stwalkerster.Bot.CommandLib.TypedFactories;
     using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Interfaces;
 
@@ -23,15 +26,18 @@
             container.AddFacility<StartableFacility>(f => f.DeferredStart());
             container.AddFacility<TypedFactoryFacility>();
             
-            container.Install(
-                new Stwalkerster.Bot.CommandLib.Startup.Installer()
-            );
-            
             string ns = "Stwalkerster.Bot.CommandLib.Testbot";
 
             container.Register(
+                Classes.FromAssemblyContaining<CommandBase>().BasedOn<ICommand>().LifestyleTransient(),
+                Component.For<ICommandTypedFactory>().AsFactory(),
+                Classes.FromAssemblyContaining<CommandParser>()
+                    .InSameNamespaceAs<CommandParser>()
+                    .WithServiceAllInterfaces(),
+
                 Component.For<ILoggerFactory>().Instance(loggerFactory),
                 Component.For<ILogger<SupportHelper>>().UsingFactoryMethod(loggerFactory.CreateLogger<SupportHelper>),
+                Component.For<ILogger<CommandParser>>().UsingFactoryMethod(loggerFactory.CreateLogger<CommandParser>),
                 Classes.FromAssemblyContaining<Installer>().InNamespace(ns + ".Service").WithServiceAllInterfaces(),
                 Classes.FromAssemblyContaining<Installer>().BasedOn<ICommand>().LifestyleTransient(),
                 Component.For<ISupportHelper>().ImplementedBy<SupportHelper>(),

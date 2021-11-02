@@ -15,5 +15,8 @@
       <PackageReference Include="Castle.Windsor" Version="4.1.1" />
       <PackageReference Include="Stwalkerster.IrcClient" Version="11.0.103" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Startup" />
+    </ItemGroup>
 
 </Project>

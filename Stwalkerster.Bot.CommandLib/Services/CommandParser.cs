@@ -5,7 +5,7 @@
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using Prometheus;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -51,7 +51,7 @@
         /// <summary>
         /// The logger.
         /// </summary>
-        private readonly ILogger logger;
+        private readonly ILogger<CommandParser> logger;
 
         #endregion
 
@@ -61,7 +61,7 @@
             IConfigurationProvider configProvider,
             ICommandTypedFactory commandFactory,
             ICoreParserService coreParserService,
-            ILogger logger)
+            ILogger<CommandParser> logger)
         {
             this.commandTrigger = configProvider.CommandPrefix;
             this.configProvider = configProvider;
@@ -74,7 +74,7 @@
             
             foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
             {
-                logger.DebugFormat("Scanning {0} for commands...", asm.FullName);
+                logger.LogDebug("Scanning {Assembly} for commands...", asm.FullName);
                 
                 foreach (var type in asm.GetTypes())
                 {
@@ -105,7 +105,7 @@
                 }
             }
 
-            this.logger.InfoFormat("Initialised Command Parser with {0} commands.", this.commands.Count);
+            this.logger.LogInformation("Initialised Command Parser with {CommandCount} commands", this.commands.Count);
         }
 
         #endregion
@@ -116,7 +116,7 @@
         {
             if (commandMessage?.CommandName == null)
             {
-                this.logger.Debug("Returning early from GetCommand - null message!");
+                this.logger.LogDebug("Returning early from GetCommand - null message!");
                 return null;
             }
 
@@ -150,7 +150,7 @@
             
             if (commandType != null)
             {   
-                this.logger.InfoFormat("Creating command object of type {0}", commandType);
+                this.logger.LogInformation("Creating command object of type {Type}", commandType);
 
                 try
                 {
@@ -167,7 +167,7 @@
                 }
                 catch (TargetInvocationException e)
                 {
-                    this.logger.Error("Unable to create instance of command.", e.InnerException);
+                    this.logger.LogError(e.InnerException, "Unable to create instance of command");
                     if (e.InnerException != null)
                     {
                         client.SendMessage(
@@ -325,8 +325,8 @@
         {
             if (!implementation.IsPublic)
             {
-                this.logger.ErrorFormat(
-                    "Implementation of command '{0}' ({1}) is not public, so cannot be instantiated! Refusing registration.",
+                this.logger.LogError(
+                    "Implementation of command '{CommandName}' ({Implementation}) is not public, so cannot be instantiated - refusing registration",
                     commandName,
                     implementation);
                 return;
@@ -338,7 +338,7 @@
             }
 
             this.commands[commandName].Add(new CommandRegistration(channel, implementation), implementation);
-            this.logger.DebugFormat("Registered command {0}", implementation.FullName);
+            this.logger.LogDebug("Registered command {Implementation}", implementation.FullName);
             
             CommandCount.Set(this.commands.Count);
         }
