@@ -13,7 +13,7 @@
     </PropertyGroup>
     <ItemGroup>
       <PackageReference Include="Castle.Windsor" Version="4.1.1" />
-      <PackageReference Include="Stwalkerster.IrcClient" Version="11.0.103" />
+      <PackageReference Include="Stwalkerster.IrcClient" Version="11.1.105" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Startup" />
