@@ -40,7 +40,7 @@
         {
             if (!this.Arguments.Any())
             {
-                throw new ArgumentCountException();
+                return OnNoArguments();
             }
 
             var commandName = this.Arguments.ElementAt(0);
@@ -67,6 +67,11 @@
             var helpResponses = command.HelpMessage(key).ToList();
 
             return helpResponses;
+        }
+
+        protected virtual IEnumerable<CommandResponse> OnNoArguments()
+        {
+            throw new ArgumentCountException();
         }
 
         protected override IDictionary<string, HelpMessage> Help()
