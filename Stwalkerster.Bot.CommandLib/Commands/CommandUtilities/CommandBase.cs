@@ -191,9 +191,24 @@
                     }
                     
                     this.ExecutionStatus.AclStatus = CommandAclStatus.Allowed;
-                    CommandExecutions.WithLabels("allowed").Inc();
-                    
-                    var commandResponses = (IEnumerable<CommandResponse>) subCommandMethod.Invoke(this, null);
+
+                    IEnumerable<CommandResponse> commandResponses;
+                    try
+                    {
+                        commandResponses = (IEnumerable<CommandResponse>)subCommandMethod.Invoke(this, null);
+                        CommandExecutions.WithLabels("allowed").Inc();
+                    }
+                    catch (Exception e) when (
+                        (e is TargetInvocationException && e.InnerException is CommandAccessDeniedException)
+                        || e is CommandAccessDeniedException)
+                    {
+                        this.Logger.InfoFormat("Access denied during command execution for user {0}", this.User);
+
+                        var accessDeniedResponses = this.OnAccessDenied() ?? new List<CommandResponse>();
+                        this.ExecutionStatus.AclStatus = CommandAclStatus.DeniedRuntime;
+                        CommandExecutions.WithLabels("runtime-denied").Inc();
+                        return accessDeniedResponses;
+                    }
 
                     commandResponses = commandResponses ?? new List<CommandResponse>();
                     

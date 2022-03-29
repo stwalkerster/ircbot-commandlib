@@ -6,6 +6,7 @@ namespace Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models
         DeniedMain,
         DeniedSubcommand,
         DeniedPrerun,
-        Allowed
+        Allowed,
+        DeniedRuntime,
     }
 }
