@@ -133,7 +133,7 @@
             var commandBaseMock = new Mock<CommandBase>(
                 string.Empty,
                 this.user.Object,
-                new string[0],
+                new List<string>(),
                 this.logger.Object,
                 this.flags.Object,
                 this.config.Object,
