@@ -7,6 +7,7 @@
     using System.Threading;
     using Castle.Core.Internal;
     using Castle.Core.Logging;
+    using ExtensionMethods;
     using Mono.Options;
     using Prometheus;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -24,8 +25,8 @@
         private static readonly Counter CommandExecutions = Metrics.CreateCounter(
             "irccommandlib_command_executions_total",
             "Number of command executions",
-            new CounterConfiguration {LabelNames = new[] {"result"}});
-        
+            new CounterConfiguration { LabelNames = new[] { "result" } });
+
         private readonly IConfigurationProvider configurationProvider;
 
         protected CommandBase(
@@ -46,7 +47,7 @@
             this.User = user;
             this.Arguments = arguments;
             this.Parameters = new Dictionary<string, object>();
-            
+
             this.ExecutionStatus = new CommandExecutionStatus();
         }
 
@@ -60,12 +61,12 @@
         /// Returns the collection of arguments passed to this command
         /// </summary>
         public IList<string> Arguments { get; }
-        
+
         /// <summary>
         /// Returns the values of any provided named parameters
         /// </summary>
         public IDictionary<string, object> Parameters { get; }
-        
+
         /// <summary>
         /// Returns the OptionSet of recognised parameters for this subcommand.
         /// </summary>
@@ -75,7 +76,7 @@
         /// Returns the name under which this command was invoked
         /// </summary>
         public string InvokedAs { get; internal set; }
-        
+
         /// <summary>
         /// Returns the subcommand which was invoked
         /// </summary>
@@ -127,7 +128,7 @@
             abort = false;
             return null;
         }
-        
+
         public IEnumerable<CommandResponse> Run()
         {
             if (this.Executed)
@@ -156,12 +157,12 @@
                         "Unable to locate an executable method for command {0} with args: {1}",
                         this.CommandName,
                         this.OriginalArguments);
-                    
+
                     var missingSubcommandResponses = this.OnMissingSubcommand() ?? new List<CommandResponse>();
                     CommandExecutions.WithLabels("no-subcommand").Inc();
                     return missingSubcommandResponses;
                 }
-                
+
                 // Test local access for this command
                 if (!this.AllowedSubcommand(subCommandMethod))
                 {
@@ -173,9 +174,10 @@
                     return accessDeniedResponses;
                 }
 
-                this.ParseOptionSet(subCommandMethod);
+                this.OptionSet = subCommandMethod.ParseOptionSet(this.OptionSetParseBool, this.OptionSetParseString);
+
                 this.ParseParameters();
-                
+
                 if (!this.ValidateArgumentCount(subCommandMethod, out var response))
                 {
                     return response;
@@ -185,7 +187,7 @@
                 {
                     IEnumerable<CommandResponse> preRunResponses;
                     bool abort;
-                    
+
                     try
                     {
                         preRunResponses = this.OnPreRun(out abort) ?? new List<CommandResponse>();
@@ -204,7 +206,7 @@
                     {
                         return preRunResponses;
                     }
-                    
+
                     this.ExecutionStatus.AclStatus = CommandAclStatus.Allowed;
 
                     IEnumerable<CommandResponse> commandResponses;
@@ -226,7 +228,7 @@
                     }
 
                     commandResponses = commandResponses ?? new List<CommandResponse>();
-                    
+
                     var completedResponses = this.OnCompleted() ?? new List<CommandResponse>();
 
                     // Resolve the list into a concrete list before committing the transaction.
@@ -245,7 +247,7 @@
                         e = e.InnerException;
                     }
 
-                    return this.HelpMessage(((CommandInvocationException) e).HelpKey);
+                    return this.HelpMessage(((CommandInvocationException)e).HelpKey);
                 }
                 catch (Exception e) when (
                     (e is TargetInvocationException && e.InnerException is ArgumentCountException)
@@ -255,8 +257,8 @@
                     {
                         e = e.InnerException;
                     }
-                    
-                    return this.AlertArgumentCount((ArgumentCountException) e);
+
+                    return this.AlertArgumentCount((ArgumentCountException)e);
                 }
                 catch (Exception e) when (
                     (e is TargetInvocationException && e.InnerException is CommandExecutionException)
@@ -266,7 +268,7 @@
                     {
                         e = e.InnerException;
                     }
-                    
+
                     this.Logger.Warn("Command encountered an issue during execution.", e);
 
                     return new List<CommandResponse>
@@ -317,7 +319,7 @@
                 new ArgumentCountException(attr.RequiredArguments, this.Arguments.Count));
             return false;
         }
-        
+
         private IEnumerable<CommandResponse> AlertArgumentCount(ArgumentCountException e)
         {
             this.Logger.Info("Command executed with missing arguments.");
@@ -327,12 +329,12 @@
                 new CommandResponse
                 {
                     Destination = CommandResponseDestination.Default,
-                    Message = e.Message 
+                    Message = e.Message
                 }
             };
 
             responses.AddRange(this.HelpMessage(e.HelpKey));
-            
+
             return responses;
         }
 
@@ -347,11 +349,11 @@
 
             var methodInfos = this.GetType()
                 .GetMethods(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic);
-            
+
             foreach (var info in methodInfos)
             {
                 this.Logger.DebugFormat("Found method: {0}", info.Name);
-                
+
                 if (info.IsAbstract || info.IsConstructor || info.IsPrivate)
                 {
                     continue;
@@ -399,7 +401,7 @@
             this.ExecutionStatus.MainFlags = flagAttributes.Aggregate(
                 string.Empty,
                 (seed, item) => seed + item.Flag + (item.GlobalOnly ? "*" : string.Empty));
-            
+
             foreach (var attribute in flagAttributes)
             {
                 var result = this.FlagService.UserHasFlag(
@@ -426,11 +428,11 @@
         private bool AllowedSubcommand(MethodInfo info)
         {
             var flagAttributes = info.GetAttributes<CommandFlagAttribute>().ToList();
-           
+
             this.ExecutionStatus.SubcommandFlags = flagAttributes.Aggregate(
                 string.Empty,
                 (seed, item) => seed + item.Flag + (item.GlobalOnly ? "*" : string.Empty));
-            
+
             foreach (var attribute in flagAttributes)
             {
                 var result = this.FlagService.UserHasFlag(
@@ -452,40 +454,16 @@
             return false;
         }
 
-        private void ParseOptionSet(MethodInfo info)
+        private void OptionSetParseBool(string x, string resultName)
         {
-            void ParseBool(string x, string resultName)
-            {
-                this.Parameters[resultName] = !string.IsNullOrEmpty(x);
-            }
-            
-            void ParseString(string x, string resultName)
-            {
-                this.Parameters[resultName] = x;
-            }
-            
-            var attr = info.GetAttributes<CommandParameterAttribute>();
-            this.OptionSet = new OptionSet();
-            
-            foreach (var a in attr)
-            {
-                if (a.ResultType == typeof(bool))
-                {
-                    this.OptionSet.Add(a.Prototype, a.Description, x => ParseBool(x, a.ResultName), a.Hidden);
-                    continue;
-                }
-                
-                if (a.ResultType == typeof(string))
-                {
-                    this.OptionSet.Add(a.Prototype, a.Description, x => ParseString(x, a.ResultName), a.Hidden);
-                    continue;
-                }
-
-                throw new NotImplementedException(
-                    $"The requested parameter type ({a.ResultType}) for parameter {a.Prototype} has not been implemented.");
-            }
+            this.Parameters[resultName] = !string.IsNullOrEmpty(x);
         }
-        
+
+        private void OptionSetParseString(string x, string resultName)
+        {
+            this.Parameters[resultName] = x;
+        }
+
         private void ParseParameters()
         {
             var remainder = this.OptionSet.Parse(this.Arguments);
@@ -495,12 +473,12 @@
                 this.Arguments.Add(r);
             }
         }
-        
+
         /// <inheritdoc />
         public IEnumerable<CommandResponse> HelpMessage(string helpKey = null)
         {
             var helpMessages = this.Help();
-            
+
             var methodInfos = this.GetType()
                 .GetMethods(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic);
 
@@ -516,7 +494,7 @@
                 {
                     continue;
                 }
-                
+
                 var helpAttr = info.GetAttribute<HelpAttribute>();
                 if (helpAttr == null)
                 {
@@ -555,12 +533,12 @@
         {
             var response = new CommandResponse
             {
-                Destination = CommandResponseDestination.PrivateMessage, 
+                Destination = CommandResponseDestination.PrivateMessage,
                 Message = "Access denied, sorry. :(",
                 IgnoreRedirection = true
             };
 
-            return new List<CommandResponse> {response};
+            return new List<CommandResponse> { response };
         }
 
         protected virtual IEnumerable<CommandResponse> OnMissingSubcommand()
@@ -572,9 +550,9 @@
                 IgnoreRedirection = true
             };
 
-            return new List<CommandResponse> {response};
+            return new List<CommandResponse> { response };
         }
-        
+
         protected virtual IEnumerable<CommandResponse> OnCompleted()
         {
             return null;
