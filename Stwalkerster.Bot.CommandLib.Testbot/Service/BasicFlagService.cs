@@ -8,7 +8,7 @@
     {
         public bool UserHasFlag(IUser user, string flag, string locality)
         {
-            if (user.Nickname == "stwalkerster" && flag == "A")
+            if (user.Nickname == "stw" && flag == "A")
             {
                 return true;
             }

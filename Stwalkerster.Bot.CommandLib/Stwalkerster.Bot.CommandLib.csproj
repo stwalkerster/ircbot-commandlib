@@ -13,6 +13,7 @@
     </PropertyGroup>
     <ItemGroup>
       <PackageReference Include="Castle.Windsor" Version="4.1.1" />
+      <PackageReference Include="Mono.Options" Version="6.12.0.148" />
       <PackageReference Include="Stwalkerster.IrcClient" Version="11.1.105" />
     </ItemGroup>
     <ItemGroup>

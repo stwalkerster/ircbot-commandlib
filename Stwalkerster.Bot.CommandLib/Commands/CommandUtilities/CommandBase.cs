@@ -7,6 +7,7 @@
     using System.Threading;
     using Castle.Core.Internal;
     using Castle.Core.Logging;
+    using Mono.Options;
     using Prometheus;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
@@ -44,6 +45,7 @@
             this.CommandSource = commandSource;
             this.User = user;
             this.Arguments = arguments;
+            this.Parameters = new Dictionary<string, object>();
             
             this.ExecutionStatus = new CommandExecutionStatus();
         }
@@ -58,6 +60,16 @@
         /// Returns the collection of arguments passed to this command
         /// </summary>
         public IList<string> Arguments { get; }
+        
+        /// <summary>
+        /// Returns the values of any provided named parameters
+        /// </summary>
+        public IDictionary<string, object> Parameters { get; }
+        
+        /// <summary>
+        /// Returns the OptionSet of recognised parameters for this subcommand.
+        /// </summary>
+        public OptionSet OptionSet { get; private set; }
 
         /// <summary>
         /// Returns the name under which this command was invoked
@@ -161,6 +173,9 @@
                     return accessDeniedResponses;
                 }
 
+                this.ParseOptionSet(subCommandMethod);
+                this.ParseParameters();
+                
                 if (!this.ValidateArgumentCount(subCommandMethod, out var response))
                 {
                     return response;
@@ -435,6 +450,50 @@
             }
 
             return false;
+        }
+
+        private void ParseOptionSet(MethodInfo info)
+        {
+            void ParseBool(string x, string resultName)
+            {
+                this.Parameters[resultName] = !string.IsNullOrEmpty(x);
+            }
+            
+            void ParseString(string x, string resultName)
+            {
+                this.Parameters[resultName] = x;
+            }
+            
+            var attr = info.GetAttributes<CommandParameterAttribute>();
+            this.OptionSet = new OptionSet();
+            
+            foreach (var a in attr)
+            {
+                if (a.ResultType == typeof(bool))
+                {
+                    this.OptionSet.Add(a.Prototype, a.Description, x => ParseBool(x, a.ResultName), a.Hidden);
+                    continue;
+                }
+                
+                if (a.ResultType == typeof(string))
+                {
+                    this.OptionSet.Add(a.Prototype, a.Description, x => ParseString(x, a.ResultName), a.Hidden);
+                    continue;
+                }
+
+                throw new NotImplementedException(
+                    $"The requested parameter type ({a.ResultType}) for parameter {a.Prototype} has not been implemented.");
+            }
+        }
+        
+        private void ParseParameters()
+        {
+            var remainder = this.OptionSet.Parse(this.Arguments);
+            this.Arguments.Clear();
+            foreach (var r in remainder)
+            {
+                this.Arguments.Add(r);
+            }
         }
         
         /// <inheritdoc />

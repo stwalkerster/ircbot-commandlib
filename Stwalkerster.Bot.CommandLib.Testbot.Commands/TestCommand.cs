@@ -49,6 +49,9 @@
             return null;
         }
 
+        [CommandParameter("f|foo", "Foo", "foo", typeof(bool))]
+        [CommandParameter("bar", "Foo", "bar", typeof(bool))]
+        [CommandParameter("baz", "Foo", "baz", typeof(bool))]
         protected override IEnumerable<CommandResponse> Execute()
         {
             this.parser.GetCommandRegistrations();
@@ -62,6 +65,8 @@
         [SubcommandInvocation("bye")]
         [CommandFlag("A", true)]
         [CommandFlag("B")]
+        [RequiredArguments(1)]
+        [CommandParameter("g|f|foo", "Foo", "foo", typeof(bool))]
         protected IEnumerable<CommandResponse> RunBye()
         {
             yield return new CommandResponse
