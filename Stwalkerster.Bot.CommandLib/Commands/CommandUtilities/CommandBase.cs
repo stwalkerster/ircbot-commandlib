@@ -176,7 +176,10 @@
 
                 this.OptionSet = subCommandMethod.ParseOptionSet(this.OptionSetParseBool, this.OptionSetParseString);
 
-                this.ParseParameters();
+                if (!this.ParseParameters(out var parameterResponse))
+                {
+                    return parameterResponse;
+                }
 
                 if (!this.ValidateArgumentCount(subCommandMethod, out var response))
                 {
@@ -454,9 +457,9 @@
             return false;
         }
 
-        private void OptionSetParseBool(string x, string resultName)
+        private void OptionSetParseBool(string x, string resultName, Func<bool, bool> mungeFunc)
         {
-            this.Parameters[resultName] = !string.IsNullOrEmpty(x);
+            this.Parameters[resultName] = mungeFunc(!string.IsNullOrEmpty(x));
         }
 
         private void OptionSetParseString(string x, string resultName)
@@ -464,13 +467,24 @@
             this.Parameters[resultName] = x;
         }
 
-        private void ParseParameters()
+        private bool ParseParameters(out IEnumerable<CommandResponse> errorResponses)
         {
-            var remainder = this.OptionSet.Parse(this.Arguments);
-            this.Arguments.Clear();
-            foreach (var r in remainder)
+            try
             {
-                this.Arguments.Add(r);
+                var remainder = this.OptionSet.Parse(this.Arguments);
+                this.Arguments.Clear();
+                foreach (var r in remainder)
+                {
+                    this.Arguments.Add(r);
+                }
+
+                errorResponses = Array.Empty<CommandResponse>();
+                return true;
+            }
+            catch (OptionException ex)
+            {
+                errorResponses = new[] { new CommandResponse { Message = ex.Message } };
+                return false;
             }
         }
 

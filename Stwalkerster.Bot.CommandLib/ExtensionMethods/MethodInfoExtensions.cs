@@ -10,7 +10,7 @@ namespace Stwalkerster.Bot.CommandLib.ExtensionMethods
     {
         public static OptionSet ParseOptionSet(
             this MethodInfo info,
-            Action<string, string> parseBool,
+            Action<string, string, Func<bool, bool>> parseBool,
             Action<string, string> parseString)
         {
             var attr = info.GetAttributes<CommandParameterAttribute>();
@@ -20,7 +20,13 @@ namespace Stwalkerster.Bot.CommandLib.ExtensionMethods
             {
                 if (a.ResultType == typeof(bool))
                 {
-                    optionSet.Add(a.Prototype, a.Description, x => parseBool(x, a.ResultName), a.Hidden);
+                    Func<bool, bool> mungeFunc = x => x;
+                    if (a.BooleanInverse)
+                    {
+                        mungeFunc = x => !x;
+                    }
+                        
+                    optionSet.Add(a.Prototype, a.Description, x => parseBool(x, a.ResultName, mungeFunc), a.Hidden);
                     continue;
                 }
 

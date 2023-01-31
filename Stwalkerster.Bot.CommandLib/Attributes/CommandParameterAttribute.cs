@@ -10,19 +10,22 @@ namespace Stwalkerster.Bot.CommandLib.Attributes
         public string ResultName { get; }
         public Type ResultType { get; }
         public bool Hidden { get; }
+        public bool BooleanInverse { get; }
 
         public CommandParameterAttribute(
             string prototype,
             string description,
             string resultName,
-            Type resultType = null,
-            bool hidden = false)
+            Type resultType,
+            bool hidden = false,
+            bool booleanInverse = false)
         {
             this.Prototype = prototype;
             this.Description = description;
             this.ResultName = resultName;
             this.ResultType = resultType;
             this.Hidden = hidden;
+            this.BooleanInverse = booleanInverse;
         }
     }
 }
