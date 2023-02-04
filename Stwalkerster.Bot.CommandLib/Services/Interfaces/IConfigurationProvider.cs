@@ -4,5 +4,6 @@
     {
         string CommandPrefix { get; }
         string DebugChannel { get; }
+        bool AllowQuotedStrings { get; }
     }
 }

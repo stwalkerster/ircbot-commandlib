@@ -5,6 +5,7 @@
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
+    using System.Text.RegularExpressions;
     using Microsoft.Extensions.Logging;
     using Prometheus;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -124,8 +125,19 @@
 
             if (commandMessage.ArgumentList != null)
             {
-                originalArguments =
-                    commandMessage.ArgumentList.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                if (this.configProvider.AllowQuotedStrings)
+                {
+                    var r = new Regex(@"(?:"".*?""|\S)+");
+                    var matchCollection = r.Matches(commandMessage.ArgumentList);
+
+                    var args = (from Match m in matchCollection select m.Value).ToList();
+                    originalArguments = args;
+                }
+                else
+                {
+                    originalArguments =
+                        commandMessage.ArgumentList.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();    
+                }
             }
 
             var redirectionResult = this.ParseRedirection(originalArguments);
