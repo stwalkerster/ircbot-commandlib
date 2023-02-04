@@ -7,7 +7,7 @@
   <param name="branch" value="refs/heads/master" />
   <param name="ignoreKnownHosts" value="true" />
   <param name="submoduleCheckout" value="CHECKOUT" />
-  <param name="teamcity:branchSpec" value="refs/heads/v*" />
+  <param name="teamcity:branchSpec" value="refs/heads/(v*)" />
   <param name="teamcitySshKey" value="TeamCity key" />
   <param name="url" value="git@github.com:stwalkerster/ircbot-commandlib.git" />
   <param name="useAlternates" value="USE_MIRRORS" />
