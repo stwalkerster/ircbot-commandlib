@@ -50,6 +50,8 @@
 
         #endregion
 
+        public ISilentModeConfiguration SilentModeConfiguration { get; set; }
+        
         #region Public Methods and Operators
 
         /// <summary>
@@ -92,7 +94,7 @@
                 message,
                 client.Nickname,
                 eventArgs.Target == client.Nickname);
-
+            
             var command = this.commandParser.GetCommand(
                 commandMessage,
                 eventArgs.User,
@@ -101,6 +103,15 @@
 
             if (command == null)
             {
+                globalStopwatch.Stop();
+                return;
+            }
+            
+            if (!commandMessage.OverrideSilence 
+                && this.SilentModeConfiguration != null
+                && this.SilentModeConfiguration.BotIsSilent(eventArgs.Target, commandMessage))
+            {
+                this.logger.Debug("Skipping command; bot is in silent mode");
                 globalStopwatch.Stop();
                 return;
             }
