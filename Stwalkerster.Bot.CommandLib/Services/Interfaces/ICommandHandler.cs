@@ -21,5 +21,7 @@
         void OnMessageReceived(object sender, MessageReceivedEventArgs e);
 
         event EventHandler<CommandExecutedEventArgs> CommandExecuted;
+        
+        ISilentModeConfiguration SilentModeConfiguration { get; set; }
     }
 }
