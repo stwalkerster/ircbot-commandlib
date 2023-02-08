@@ -2,7 +2,7 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" parent-id="Irc" uuid="6a6c1ea4-1bd6-40eb-949d-80dc11eddf74" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2021.1/project-config.xsd">
   <name>Stwalkerster.Bot.CommandLib</name>
   <parameters>
-    <param name="docker.dotnet.sdk" value="mcr.microsoft.com/dotnet/sdk:3.1" />
+    <param name="docker.dotnet.sdk" value="mcr.microsoft.com/dotnet/sdk:6.0-alpine" />
   </parameters>
   <project-extensions>
     <extension id="PROJECT_EXT_3" type="versionedSettings">
