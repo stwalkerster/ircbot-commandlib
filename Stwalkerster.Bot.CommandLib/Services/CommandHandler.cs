@@ -111,7 +111,7 @@
                 && this.SilentModeConfiguration != null
                 && this.SilentModeConfiguration.BotIsSilent(eventArgs.Target, commandMessage))
             {
-                this.logger.Debug("Skipping command; bot is in silent mode");
+                this.logger.InfoFormat("Skipping command; bot is in silent mode in {0}", eventArgs.Target);
                 globalStopwatch.Stop();
                 return;
             }
