@@ -9,6 +9,14 @@
     {
         public HelpMessage HelpMessage { get; }
 
+        public HelpAttribute(string syntax) : this(syntax, Array.Empty<string>())
+        {
+        }
+        
+        public HelpAttribute(string[] syntax) : this(syntax, Array.Empty<string>())
+        {
+        }
+        
         public HelpAttribute(string syntax, string text)
             : this(new[] {syntax}, new[] {text})
         {
