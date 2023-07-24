@@ -13,7 +13,7 @@
         <RepositoryUrl>https://github.com/stwalkerster/ircbot-commandlib</RepositoryUrl>
     </PropertyGroup>
     <ItemGroup>
-      <PackageReference Include="Castle.Windsor" Version="4.1.1" />
+      <PackageReference Include="Castle.Windsor" Version="6.0.0" />
       <PackageReference Include="Mono.Options" Version="6.12.0.148" />
       <PackageReference Include="Stwalkerster.IrcClient" Version="12.0.145" />
     </ItemGroup>
