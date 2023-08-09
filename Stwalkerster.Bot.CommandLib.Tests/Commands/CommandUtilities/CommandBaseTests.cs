@@ -4,11 +4,8 @@
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
-    using Moq;
-    using Moq.Protected;
+    using NSubstitute;
     using NUnit.Framework;
-    using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
-    using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Exceptions;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
@@ -17,40 +14,39 @@
     [TestFixture]
     public class CommandBaseTests
     {
-        private Mock<IUser> user;
-        private Mock<ILogger> logger;
-        private Mock<IFlagService> flags;
-        private Mock<IConfigurationProvider> config;
-        private Mock<IIrcClient> client;
+        private IUser user;
+        private ILogger logger;
+        private IFlagService flags;
+        private IConfigurationProvider config;
+        private IIrcClient client;
 
         [SetUp]
         public void LocalSetup()
         {
-            this.user = new Mock<IUser>();
-            this.logger = new Mock<ILogger>();
-            this.flags = new Mock<IFlagService>();
-            this.config = new Mock<IConfigurationProvider>();
-            this.client = new Mock<IIrcClient>();
+            this.user = Substitute.For<IUser>();
+            this.logger = Substitute.For<ILogger>();
+            this.flags = Substitute.For<IFlagService>();
+            this.config = Substitute.For<IConfigurationProvider>();
+            this.client = Substitute.For<IIrcClient>();
         }
         
         [Test]
         public void ShouldHandleExceptionGracefully()
         {
             // arrange
-            var commandBaseMock = new Mock<CommandBase>(
+            var commandBaseMock = Substitute.ForPartsOf<CommandHarness>(
                 string.Empty,
-                this.user.Object,
-                new string[0],
-                this.logger.Object,
-                this.flags.Object,
-                this.config.Object,
-                this.client.Object);
-            
-            commandBaseMock.CallBase = true;
-            commandBaseMock.Protected().Setup("Execute").Throws<Exception>();
+                this.user,
+                Array.Empty<string>(),
+                this.logger,
+                this.flags,
+                this.config,
+                this.client);
 
+            commandBaseMock.OnExecute.Returns(() => throw new Exception());
+            
             // act
-            var commandResponses = commandBaseMock.Object.Run();
+            var commandResponses = commandBaseMock.Run();
             
             // assert
             Assert.AreEqual(1, commandResponses.Count());
@@ -60,20 +56,19 @@
         public void ShouldHandleArgumentsExceptionGracefully()
         {
             // arrange
-            var commandBaseMock = new Mock<CommandBase>(
+            var commandBaseMock = Substitute.ForPartsOf<CommandHarness>(
                 string.Empty,
-                this.user.Object,
-                new string[0],
-                this.logger.Object,
-                this.flags.Object,
-                this.config.Object,
-                this.client.Object);
+                this.user,
+                Array.Empty<string>(),
+                this.logger,
+                this.flags,
+                this.config,
+                this.client);
             
-            commandBaseMock.CallBase = true;
-            commandBaseMock.Protected().Setup("Execute").Throws<ArgumentCountException>();
-
+            commandBaseMock.OnExecute.Returns(() => throw new ArgumentCountException());
+            
             // act
-            var commandResponses = commandBaseMock.Object.Run();
+            var commandResponses = commandBaseMock.Run();
             
             // assert
             Assert.GreaterOrEqual(commandResponses.Count(), 1);
@@ -83,20 +78,19 @@
         public void ShouldHandleInvocationExceptionGracefully()
         {
             // arrange
-            var commandBaseMock = new Mock<CommandBase>(
+            var commandBaseMock = Substitute.ForPartsOf<CommandHarness>(
                 string.Empty,
-                this.user.Object,
-                new string[0],
-                this.logger.Object,
-                this.flags.Object,
-                this.config.Object,
-                this.client.Object);
+                this.user,
+                Array.Empty<string>(),
+                this.logger,
+                this.flags,
+                this.config,
+                this.client);
             
-            commandBaseMock.CallBase = true;
-            commandBaseMock.Protected().Setup("Execute").Throws<CommandInvocationException>();
-
+            commandBaseMock.OnExecute.Returns(() => throw new CommandInvocationException());
+            
             // act
-            var commandResponses = commandBaseMock.Object.Run();
+            var commandResponses = commandBaseMock.Run();
             
             // assert
             Assert.GreaterOrEqual(commandResponses.Count(), 1);
@@ -106,53 +100,44 @@
         public void ShouldHandleAccessDenied()
         {
             // arrange
-            var commandBaseMock = new Mock<CommandBase>(
+            var commandBaseMock = Substitute.ForPartsOf<CommandHarness>(
                 string.Empty,
-                this.user.Object,
-                new string[0],
-                this.logger.Object,
-                this.flags.Object,
-                this.config.Object,
-                this.client.Object);
+                this.user,
+                Array.Empty<string>(),
+                this.logger,
+                this.flags,
+                this.config,
+                this.client);
             
-            commandBaseMock.CallBase = true;
-            commandBaseMock.Protected().Setup("Execute").Throws<Exception>();
-            commandBaseMock.Protected().Setup("OnAccessDenied").Verifiable();
+            commandBaseMock.OnExecute.Returns(() => throw new Exception());
 
             // act
-            commandBaseMock.Object.Run();
+            commandBaseMock.Run();
             
             // assert
-            commandBaseMock.Protected().Verify("OnAccessDenied", Times.Once());
+            Assert.AreEqual(1, commandBaseMock.DoneAccessDenied);
         }
         
         [Test]
         public void ShouldCallOnCompleted()
         {
             // arrange
-            var commandBaseMock = new Mock<CommandBase>(
+            var commandBaseMock = Substitute.ForPartsOf<CommandHarness>(
                 string.Empty,
-                this.user.Object,
+                this.user,
                 new List<string>(),
-                this.logger.Object,
-                this.flags.Object,
-                this.config.Object,
-                this.client.Object);
-            
-            commandBaseMock.CallBase = true;
-            this.flags.Setup(x => x.UserHasFlag(It.IsAny<IUser>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(true);
-            commandBaseMock.Protected().Setup("OnCompleted").Verifiable();
-            
-            commandBaseMock.Protected()
-                .Setup<IEnumerable<CommandResponse>>("Execute")
-                .Returns(new List<CommandResponse>());
+                this.logger,
+                this.flags,
+                this.config,
+                this.client);
 
+            this.flags.UserHasFlag(Arg.Any<IUser>(), Arg.Any<string>(), Arg.Any<string>()).Returns(true);
+            
             // act
-            commandBaseMock.Object.Run();
+            commandBaseMock.Run();
             
             // assert
-            commandBaseMock.Protected().Verify("OnCompleted", Times.Once());
+            Assert.AreEqual(1, commandBaseMock.DoneCompleted);
         }
 
         
