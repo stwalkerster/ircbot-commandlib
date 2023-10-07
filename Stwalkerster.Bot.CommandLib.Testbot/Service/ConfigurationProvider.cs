@@ -6,5 +6,6 @@
         public string CommandPrefix { get { return "!"; } }
         public string DebugChannel { get { return "##stwalkerster-development"; } }
         public bool AllowQuotedStrings => true;
+        public bool IncludeBuiltins => true;
     }
 }

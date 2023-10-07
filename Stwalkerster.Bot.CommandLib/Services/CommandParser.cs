@@ -76,6 +76,11 @@
             foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
             {
                 logger.LogDebug("Scanning {Assembly} for commands...", asm.FullName);
+
+                if (Assembly.GetExecutingAssembly().Equals(asm) && !configProvider.IncludeBuiltins)
+                {
+                    continue;
+                }
                 
                 foreach (var type in asm.GetTypes())
                 {
