@@ -5,9 +5,9 @@ namespace Stwalkerster.Bot.CommandLib.Tests.Services
     using Stwalkerster.Bot.CommandLib.Services;
 
     [TestFixture]
-    public class CommandParserTests
+    public class CoreParserServiceTests
     {
-        [Test, TestCaseSource(typeof(CommandParserTests), "ParserTestCases")]
+        [Test, TestCaseSource(typeof(CoreParserServiceTests), "ParserTestCases")]
         public void ShouldParseCommandCorrectly(string input, string expectedCommandName, string expectedArgs, bool expectedOverrideSilence, bool isDirect)
         {
             var parser = new CoreParserService();
