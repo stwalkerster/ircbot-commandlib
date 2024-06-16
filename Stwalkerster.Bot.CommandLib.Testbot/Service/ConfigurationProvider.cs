@@ -7,5 +7,6 @@
         public string DebugChannel { get { return "##stwalkerster-development"; } }
         public bool AllowQuotedStrings => true;
         public bool IncludeBuiltins => true;
+        public string UseCommandInitSeparator => null;
     }
 }

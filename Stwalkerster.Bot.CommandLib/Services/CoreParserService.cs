@@ -7,7 +7,7 @@ namespace Stwalkerster.Bot.CommandLib.Services
 
     public class CoreParserService : ICoreParserService
     {
-        public CommandMessage ParseCommandMessage(string message, string nickname, string commandTrigger, bool isDirect)
+        public CommandMessage ParseCommandMessage(string message, string nickname, string commandTrigger, bool isDirect, string initCharacter)
         {
             var directSkip = "";
             var overrideSilence = false;
@@ -16,9 +16,15 @@ namespace Stwalkerster.Bot.CommandLib.Services
                 directSkip = "?";
                 overrideSilence = true;
             }
+
+            var initialMatch = "^";
+            if (!string.IsNullOrWhiteSpace(initCharacter) && !isDirect)
+            {
+                initialMatch = $"(?:^|{Regex.Escape(initCharacter)})";
+            }
             
             var regex =
-                $"^(?:{commandTrigger}|(?:(?<botname>{nickname.ToLower()}|{nickname})(?:[:,] ?| ))){directSkip}(?<cmd>[\\S]+)(?: (?<args>.*?))?$";
+                $"{initialMatch}(?:{commandTrigger}|(?:(?<botname>{nickname.ToLower()}|{nickname})(?:[:,] ?| ))){directSkip}(?<cmd>[\\S]+)(?: (?<args>.*?))?$";
             
             var validCommand = new Regex(regex);
 

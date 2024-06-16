@@ -6,5 +6,6 @@
         string DebugChannel { get; }
         bool AllowQuotedStrings { get; }
         bool IncludeBuiltins { get; }
+        string UseCommandInitSeparator { get; }
     }
 }

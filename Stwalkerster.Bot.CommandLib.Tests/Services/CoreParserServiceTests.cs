@@ -12,13 +12,31 @@ namespace Stwalkerster.Bot.CommandLib.Tests.Services
         {
             var parser = new CoreParserService();
 
-            var result = parser.ParseCommandMessage(input, "Helpmebot", "!", isDirect);
+            var result = parser.ParseCommandMessage(input, "Helpmebot", "!", isDirect, null);
 
             Assert.AreEqual(expectedCommandName, result.CommandName);
             Assert.AreEqual(expectedArgs, result.ArgumentList);
             Assert.AreEqual(expectedOverrideSilence, result.OverrideSilence);
         }
 
+        [Test, TestCaseSource(typeof(CoreParserServiceTests), "ParserTestCases")]
+        public void ShouldParseCommandCorrectlyWithInit(string input, string expectedCommandName, string expectedArgs, bool expectedOverrideSilence, bool isDirect)
+        {
+            if (isDirect)
+            {
+                Assert.Ignore("Not valid to test init with direct messages");
+            }
+            
+            var parser = new CoreParserService();
+
+            var result = parser.ParseCommandMessage("potato ;" + input, "Helpmebot", "!", isDirect, ";");
+
+            Assert.AreEqual(expectedCommandName, result.CommandName);
+            Assert.AreEqual(expectedArgs, result.ArgumentList);
+            Assert.AreEqual(expectedOverrideSilence, result.OverrideSilence);
+        }
+
+        
         public static IEnumerable<TestCaseData> ParserTestCases
         {
             get

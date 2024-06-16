@@ -274,7 +274,7 @@
         
         public CommandMessage ParseCommandMessage(string message, string nickname, bool isDirect)
         {
-            return this.coreParserService.ParseCommandMessage(message, nickname, this.commandTrigger, isDirect);
+            return this.coreParserService.ParseCommandMessage(message, nickname, this.commandTrigger, isDirect, this.configProvider.UseCommandInitSeparator);
         }
 
         /// <summary>

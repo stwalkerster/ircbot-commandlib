@@ -4,6 +4,6 @@ namespace Stwalkerster.Bot.CommandLib.Services.Interfaces
 
     public interface ICoreParserService
     {
-        CommandMessage ParseCommandMessage(string message, string nickname, string commandTrigger, bool isDirect);
+        CommandMessage ParseCommandMessage(string message, string nickname, string commandTrigger, bool isDirect, string initCharacter);
     }
 }
