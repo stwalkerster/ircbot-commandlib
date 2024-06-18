@@ -14,9 +14,9 @@ namespace Stwalkerster.Bot.CommandLib.Tests.Services
 
             var result = parser.ParseCommandMessage(input, "Helpmebot", "!", isDirect, null);
 
-            Assert.AreEqual(expectedCommandName, result.CommandName);
-            Assert.AreEqual(expectedArgs, result.ArgumentList);
-            Assert.AreEqual(expectedOverrideSilence, result.OverrideSilence);
+            Assert.That(result.CommandName, Is.EqualTo(expectedCommandName));
+            Assert.That(result.ArgumentList, Is.EqualTo(expectedArgs));
+            Assert.That(result.OverrideSilence, Is.EqualTo(expectedOverrideSilence));
         }
 
         [Test, TestCaseSource(typeof(CoreParserServiceTests), "ParserTestCases")]
@@ -31,9 +31,9 @@ namespace Stwalkerster.Bot.CommandLib.Tests.Services
 
             var result = parser.ParseCommandMessage("potato ;" + input, "Helpmebot", "!", isDirect, ";");
 
-            Assert.AreEqual(expectedCommandName, result.CommandName);
-            Assert.AreEqual(expectedArgs, result.ArgumentList);
-            Assert.AreEqual(expectedOverrideSilence, result.OverrideSilence);
+            Assert.That(result.CommandName, Is.EqualTo(expectedCommandName));
+            Assert.That(result.ArgumentList, Is.EqualTo(expectedArgs));
+            Assert.That(result.OverrideSilence, Is.EqualTo(expectedOverrideSilence));
         }
 
         

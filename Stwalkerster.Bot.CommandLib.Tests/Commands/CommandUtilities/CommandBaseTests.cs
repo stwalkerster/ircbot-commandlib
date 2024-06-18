@@ -49,7 +49,7 @@
             var commandResponses = commandBaseMock.Run();
             
             // assert
-            Assert.AreEqual(1, commandResponses.Count());
+            Assert.That(commandResponses, Has.Count.EqualTo(1));
         }
         
         [Test]
@@ -71,7 +71,8 @@
             var commandResponses = commandBaseMock.Run();
             
             // assert
-            Assert.GreaterOrEqual(commandResponses.Count(), 1);
+            Assert.That(commandResponses, Has.Count.GreaterThanOrEqualTo(1));
+
         }
         
         [Test]
@@ -93,7 +94,7 @@
             var commandResponses = commandBaseMock.Run();
             
             // assert
-            Assert.GreaterOrEqual(commandResponses.Count(), 1);
+            Assert.That(commandResponses, Has.Count.GreaterThanOrEqualTo(1));
         }
         
         [Test]
@@ -115,7 +116,7 @@
             commandBaseMock.Run();
             
             // assert
-            Assert.AreEqual(1, commandBaseMock.DoneAccessDenied);
+            Assert.That(commandBaseMock.DoneAccessDenied, Is.EqualTo(1));
         }
         
         [Test]
@@ -137,7 +138,7 @@
             commandBaseMock.Run();
             
             // assert
-            Assert.AreEqual(1, commandBaseMock.DoneCompleted);
+            Assert.That(commandBaseMock.DoneCompleted, Is.EqualTo(1));
         }
 
         

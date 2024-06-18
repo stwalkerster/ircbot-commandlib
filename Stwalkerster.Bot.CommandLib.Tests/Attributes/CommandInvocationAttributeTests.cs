@@ -11,7 +11,7 @@
         {
             var attr = new CommandInvocationAttribute("foo");
             
-            Assert.AreEqual("foo", attr.CommandName);
+            Assert.That(attr.CommandName, Is.EqualTo("foo"));
         }
     }
 }

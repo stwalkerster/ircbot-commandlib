@@ -11,7 +11,7 @@
         {
             var attr = new CommandFlagAttribute("foo");
             
-            Assert.AreEqual("foo", attr.Flag);
+            Assert.That(attr.Flag, Is.EqualTo("foo"));
         }
     }
 }
