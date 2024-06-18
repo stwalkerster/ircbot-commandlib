@@ -1,17 +1,16 @@
-namespace Stwalkerster.Bot.CommandLib.ExtensionMethods
+namespace Stwalkerster.Bot.CommandLib.ExtensionMethods;
+
+using System.Collections.Generic;
+
+public static class ParameterExtensions
 {
-    using System.Collections.Generic;
-
-    public static class ParameterExtensions
+    public static T GetParameter<T>(this IDictionary<string, object> parameters, string key, T defaultValue)
     {
-        public static T GetParameter<T>(this IDictionary<string, object> parameters, string key, T defaultValue)
+        if (!parameters.TryGetValue(key, out var parameter))
         {
-            if (!parameters.ContainsKey(key))
-            {
-                return defaultValue;
-            }
-
-            return (T)parameters[key];
+            return defaultValue;
         }
+
+        return (T)parameter;
     }
 }

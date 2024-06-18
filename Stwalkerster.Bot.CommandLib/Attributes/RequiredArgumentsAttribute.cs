@@ -1,14 +1,8 @@
-﻿namespace Stwalkerster.Bot.CommandLib.Attributes
-{
-    using System;
-    [AttributeUsage(AttributeTargets.Method)]
-    public class RequiredArgumentsAttribute : Attribute
-    {
-        public int RequiredArguments { get; }
+﻿namespace Stwalkerster.Bot.CommandLib.Attributes;
 
-        public RequiredArgumentsAttribute(int requiredArguments)
-        {
-            this.RequiredArguments = requiredArguments;
-        }
-    }
+using System;
+[AttributeUsage(AttributeTargets.Method)]
+public class RequiredArgumentsAttribute(int requiredArguments) : Attribute
+{
+    public int RequiredArguments { get; } = requiredArguments;
 }

@@ -1,40 +1,17 @@
-﻿namespace Stwalkerster.Bot.CommandLib.Exceptions
+﻿namespace Stwalkerster.Bot.CommandLib.Exceptions;
+
+using System;
+
+[Serializable]
+public class CommandErrorException : CommandExecutionException
 {
-    using System;
-
-    /// <summary>
-    /// The command error exception.
-    /// </summary>
-    [Serializable]
-    public class CommandErrorException : CommandExecutionException
+    public CommandErrorException(string message)
+        : base(message)
     {
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="CommandErrorException"/> class.
-        /// </summary>
-        /// <param name="message">
-        /// The message that describes the error. 
-        /// </param>
-        public CommandErrorException(string message)
-            : base(message)
-        {
-        }
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="CommandErrorException"/> class.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="innerException">
-        /// The inner exception.
-        /// </param>
-        public CommandErrorException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
-
-        #endregion
+    }
+    
+    public CommandErrorException(string message, Exception innerException)
+        : base(message, innerException)
+    {
     }
 }

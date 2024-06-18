@@ -1,26 +1,12 @@
-﻿namespace Stwalkerster.Bot.CommandLib.Exceptions
+﻿namespace Stwalkerster.Bot.CommandLib.Exceptions;
+
+using System;
+
+[Serializable]
+public class ConfigurationException : Exception
 {
-    using System;
-
-    /// <summary>
-    /// The configuration exception.
-    /// </summary>
-    [Serializable]
-    public class ConfigurationException : Exception
+    public ConfigurationException(string message)
+        : base(message)
     {
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="ConfigurationException"/> class.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        public ConfigurationException(string message)
-            : base(message)
-        {
-        }
-
-        #endregion
     }
 }

@@ -1,8 +1,7 @@
-﻿namespace Stwalkerster.Bot.CommandLib.Services.Interfaces
+﻿namespace Stwalkerster.Bot.CommandLib.Services.Interfaces;
+
+public interface IApplication
 {
-    public interface IApplication
-    {
-        void Stop();
-        void Run();
-    }
+    void Stop();
+    void Run();
 }

@@ -1,12 +1,11 @@
-namespace Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models
+namespace Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
+
+public enum CommandAclStatus
 {
-    public enum CommandAclStatus
-    {
-        Prerun,
-        DeniedMain,
-        DeniedSubcommand,
-        DeniedPrerun,
-        Allowed,
-        DeniedRuntime,
-    }
+    Prerun,
+    DeniedMain,
+    DeniedSubcommand,
+    DeniedPrerun,
+    Allowed,
+    DeniedRuntime,
 }

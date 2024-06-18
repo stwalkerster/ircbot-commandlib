@@ -1,104 +1,70 @@
-﻿namespace Stwalkerster.Bot.CommandLib.Services.Interfaces
+﻿namespace Stwalkerster.Bot.CommandLib.Services.Interfaces;
+
+using System;
+using System.Collections.Generic;
+using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
+using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
+using Stwalkerster.Bot.CommandLib.Model;
+using Stwalkerster.IrcClient.Interfaces;
+using Stwalkerster.IrcClient.Model.Interfaces;
+    
+public interface ICommandParser
 {
-    using System;
-    using System.Collections.Generic;
-    using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
-    using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
-    using Stwalkerster.Bot.CommandLib.Model;
-    using Stwalkerster.IrcClient.Interfaces;
-    using Stwalkerster.IrcClient.Model.Interfaces;
+    ICommand GetCommand(CommandMessage commandMessage, IUser user, string destination, IIrcClient client);
+
+    void Release(ICommand command);
+
+    CommandMessage ParseCommandMessage(string message, string nickname, bool isDirect);
+
+    RedirectionResult ParseRedirection(IEnumerable<string> inputArguments);
 
     /// <summary>
-    /// The CommandParser interface.
+    /// Registers a command
     /// </summary>
-    public interface ICommandParser
-    {
-        /// <summary>
-        /// The get command.
-        /// </summary>
-        /// <param name="commandMessage">
-        /// The command Message.
-        /// </param>
-        /// <param name="user">
-        /// The user.
-        /// </param>
-        /// <param name="destination">
-        /// The destination.
-        /// </param>
-        /// <param name="client">
-        /// The client.
-        /// </param>
-        /// <returns>
-        /// The <see cref="ICommand"/>.
-        /// </returns>
-        ICommand GetCommand(CommandMessage commandMessage, IUser user, string destination, IIrcClient client);
+    /// <param name="commandName">
+    /// The public name of the command, used to invoke this command from IRC
+    /// </param>
+    /// <param name="implementation">
+    /// The type implementing this command
+    /// </param>
+    void RegisterCommand(string commandName, Type implementation);
 
-        /// <summary>
-        /// The release.
-        /// </summary>
-        /// <param name="command">
-        /// The command.
-        /// </param>
-        void Release(ICommand command);
+    /// <summary>
+    /// Registers a command to a specific channel
+    /// </summary>
+    /// <param name="commandName">
+    /// The public name of the command, used to invoke this command from IRC
+    /// </param>
+    /// <param name="implementation">
+    /// The type implementing this command
+    /// </param>
+    /// <param name="channel">
+    /// The channel to limit this registration to
+    /// </param>
+    void RegisterCommand(string commandName, Type implementation, string channel);
 
-        /// <summary>
-        /// The parse command message.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="nickname">
-        /// The nickname of the IRC client.
-        /// </param>
-        /// <param name="isDirect"></param>
-        /// <returns>
-        /// The <see cref="CommandMessage"/>.
-        /// </returns>
-        CommandMessage ParseCommandMessage(string message, string nickname, bool isDirect);
-
-        /// <summary>
-        /// The parse redirection.
-        /// </summary>
-        /// <param name="inputArguments">
-        /// The input arguments.
-        /// </param>
-        /// <returns>
-        /// The <see cref="RedirectionResult"/>.
-        /// </returns>
-        RedirectionResult ParseRedirection(IEnumerable<string> inputArguments);
-
-        /// <summary>
-        /// The register command.
-        /// </summary>
-        /// <param name="keyword">
-        /// The keyword.
-        /// </param>
-        /// <param name="implementation">
-        /// The implementation.
-        /// </param>
-        void RegisterCommand(string keyword, Type implementation);
-
-        /// <summary>
-        /// The register command.
-        /// </summary>
-        /// <param name="commandName">
-        /// The keyword.
-        /// </param>
-        /// <param name="implementation">
-        /// The implementation.
-        /// </param>
-        /// <param name="channel">
-        /// The channel to limit this registration to
-        /// </param>
-        void RegisterCommand(string commandName, Type implementation, string channel);
-
-        void UnregisterCommand(string commandName);
+    /// <summary>
+    /// unegisters a command
+    /// </summary>
+    /// <param name="commandName">
+    /// The public name of the command, used to invoke this command from IRC
+    /// </param>
+    void UnregisterCommand(string commandName);
         
-        void UnregisterCommand(string commandName, string channel);
+    /// <summary>
+    /// Unregisters a command to a specific channel
+    /// </summary>
+    /// <param name="commandName">
+    /// The public name of the command, used to invoke this command from IRC
+    /// </param>
+    /// <param name="channel">
+    /// The channel this registration was limited to
+    /// </param>
+    void UnregisterCommand(string commandName, string channel);
 
-        Type GetRegisteredCommand(string commandName);
+    Type GetRegisteredCommand(string commandName);
         
-        Type GetRegisteredCommand(string commandName, string destination);
-        Dictionary<string, Dictionary<CommandRegistration, Type>> GetCommandRegistrations();
-    }
+    Type GetRegisteredCommand(string commandName, string destination);
+        
+    Dictionary<string, Dictionary<CommandRegistration, Type>> GetCommandRegistrations();
 }

@@ -1,23 +1,19 @@
-﻿namespace Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response
+﻿namespace Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
+
+public enum CommandResponseDestination
 {
     /// <summary>
-    /// Command response destinations
+    /// Back to the channel from whence it came
     /// </summary>
-    public enum CommandResponseDestination
-    {
-        /// <summary>
-        /// Back to the channel from whence it came
-        /// </summary>
-        Default,
+    Default,
 
-        /// <summary>
-        /// To the debugging channel
-        /// </summary>
-        ChannelDebug,
+    /// <summary>
+    /// To the debugging channel
+    /// </summary>
+    ChannelDebug,
 
-        /// <summary>
-        /// Back to the user in a private message
-        /// </summary>
-        PrivateMessage
-    }
+    /// <summary>
+    /// Back to the user in a private message
+    /// </summary>
+    PrivateMessage
 }

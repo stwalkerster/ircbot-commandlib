@@ -1,9 +1,8 @@
-namespace Stwalkerster.Bot.CommandLib.Services.Interfaces
-{
-    using Model;
+namespace Stwalkerster.Bot.CommandLib.Services.Interfaces;
 
-    public interface ISilentModeConfiguration
-    {
-        bool BotIsSilent(string destination, CommandMessage message);
-    }
+using Model;
+
+public interface ISilentModeConfiguration
+{
+    bool BotIsSilent(string destination, CommandMessage message);
 }

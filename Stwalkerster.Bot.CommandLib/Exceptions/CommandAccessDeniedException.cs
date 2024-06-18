@@ -1,19 +1,18 @@
-﻿namespace Stwalkerster.Bot.CommandLib.Exceptions
-{
-    using System;
+﻿namespace Stwalkerster.Bot.CommandLib.Exceptions;
 
-    [Serializable]
-    public class CommandAccessDeniedException : CommandExecutionException
+using System;
+
+[Serializable]
+public class CommandAccessDeniedException : CommandExecutionException
+{
+    public CommandAccessDeniedException()
     {
-        public CommandAccessDeniedException()
-        {
-        }
-        
-        public CommandAccessDeniedException(string helpKey)
-        {
-            this.HelpKey = helpKey;
-        }
-        
-        public string HelpKey { get; }
     }
+        
+    public CommandAccessDeniedException(string helpKey)
+    {
+        this.HelpKey = helpKey;
+    }
+        
+    public string HelpKey { get; }
 }

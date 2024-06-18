@@ -1,9 +1,8 @@
-﻿namespace Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response
-{
-    public enum CommandResponseType
-    {
-        Message, 
+﻿namespace Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
 
-        Notice
-    }
+public enum CommandResponseType
+{
+    Message, 
+
+    Notice
 }

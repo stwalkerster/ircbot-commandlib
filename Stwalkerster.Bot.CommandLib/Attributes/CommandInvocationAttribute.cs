@@ -1,15 +1,9 @@
-﻿namespace Stwalkerster.Bot.CommandLib.Attributes
-{
-    using System;
-    
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public class CommandInvocationAttribute : Attribute
-    {
-        public CommandInvocationAttribute(string commandName)
-        {
-            this.CommandName = commandName;
-        }
+﻿namespace Stwalkerster.Bot.CommandLib.Attributes;
 
-        public string CommandName { get; }
-    }
+using System;
+    
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+public class CommandInvocationAttribute(string commandName) : Attribute
+{
+    public string CommandName { get; } = commandName;
 }
