@@ -5,7 +5,6 @@
     using System.Linq;
     using System.Reflection;
     using System.Threading;
-    using Castle.Core.Internal;
     using Castle.Core.Logging;
     using ExtensionMethods;
     using Mono.Options;

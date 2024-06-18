@@ -1,9 +1,10 @@
 namespace Stwalkerster.Bot.CommandLib.ExtensionMethods
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
-    using Attributes;
-    using Castle.Core.Internal;
+    using Stwalkerster.Bot.CommandLib.Attributes;
     using Mono.Options;
 
     public static class MethodInfoExtensions
@@ -13,7 +14,7 @@ namespace Stwalkerster.Bot.CommandLib.ExtensionMethods
             Action<string, string, Func<bool, bool>> parseBool,
             Action<string, string> parseString)
         {
-            var attr = info.GetAttributes<CommandParameterAttribute>();
+            var attr = info.GetCustomAttributes<CommandParameterAttribute>();
             var optionSet = new OptionSet();
 
             foreach (var a in attr)
@@ -41,6 +42,16 @@ namespace Stwalkerster.Bot.CommandLib.ExtensionMethods
             }
 
             return optionSet;
+        }
+
+        public static IEnumerable<T> GetAttributes<T>(this MemberInfo info) where T : Attribute
+        {
+            return info.GetCustomAttributes<T>();
+        }
+
+        public static T GetAttribute<T>(this MemberInfo info) where T : Attribute
+        {
+            return info.GetCustomAttributes<T>().FirstOrDefault();
         }
     }
 }
