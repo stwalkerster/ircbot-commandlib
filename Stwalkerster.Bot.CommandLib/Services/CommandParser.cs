@@ -224,7 +224,7 @@ public class CommandParser : ICommandParser
             parsedArguments.Add(argument);
         }
 
-        // last word on line was >
+        // last word on the line was >
         if (redirecting)
         {
             parsedArguments.Add(">");

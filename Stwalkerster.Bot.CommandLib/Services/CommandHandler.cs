@@ -1,25 +1,23 @@
 ﻿namespace Stwalkerster.Bot.CommandLib.Services;
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using Castle.Core.Logging;
+using Microsoft.Extensions.Logging;
 using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
 using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
 using Stwalkerster.Bot.CommandLib.Services.Interfaces;
 using Stwalkerster.IrcClient.Events;
-using Stwalkerster.IrcClient.Interfaces;
 using Stwalkerster.IrcClient.Messages;
 
 public class CommandHandler : ICommandHandler
 {
     private readonly ICommandParser commandParser;
     private readonly IConfigurationProvider configProvider;
-    private readonly ILogger logger;
+    private readonly ILogger<CommandHandler> logger;
     public event EventHandler<CommandExecutedEventArgs> CommandExecuted;
 
-    public CommandHandler(ICommandParser commandParser, IConfigurationProvider configProvider, ILogger logger)
+    public CommandHandler(ICommandParser commandParser, IConfigurationProvider configProvider, ILogger<CommandHandler> logger)
     {
         this.commandParser = commandParser;
         this.configProvider = configProvider;
@@ -44,12 +42,9 @@ public class CommandHandler : ICommandHandler
     private void ProcessMessageAsync(object state)
     {
         var globalStopwatch = Stopwatch.StartNew();
-            
         var eventArgs = (MessageReceivedEventArgs)state;
-
-        IIrcClient client = eventArgs.Client;
-
-        string message = eventArgs.Message;
+        var client = eventArgs.Client;
+        var message = eventArgs.Message;
 
         var commandMessage = this.commandParser.ParseCommandMessage(
             message,
@@ -72,14 +67,14 @@ public class CommandHandler : ICommandHandler
             && this.SilentModeConfiguration != null
             && this.SilentModeConfiguration.BotIsSilent(eventArgs.Target, commandMessage))
         {
-            this.logger.InfoFormat("Skipping command; bot is in silent mode in {0}", eventArgs.Target);
+            this.logger.LogInformation("Skipping command; bot is in silent mode in {Target}", eventArgs.Target);
             globalStopwatch.Stop();
             return;
         }
 
         try
         {
-            IEnumerable<CommandResponse> commandResponses = command.Run();
+            var commandResponses = command.Run();
 
             this.CommandExecuted?.Invoke(this, new CommandExecutedEventArgs(command));
 
@@ -98,15 +93,10 @@ public class CommandHandler : ICommandHandler
                         destination = command.User.Nickname;
                         break;
                     case CommandResponseDestination.Default:
-                        if (command.CommandSource == client.Nickname)
-                        {
-                            // PMs to the bot.
-                            destination = command.User.Nickname;
-                        }
-                        else
-                        {
-                            destination = command.CommandSource;
-                        }
+                        // PMs to the bot.
+                        destination = command.CommandSource == client.Nickname
+                            ? command.User.Nickname
+                            : command.CommandSource;
                         break;
                     default:
                         destination = command.CommandSource;
@@ -125,14 +115,17 @@ public class CommandHandler : ICommandHandler
             }
                 
             globalStopwatch.Stop();
-            this.logger.Debug($"Command {command.CommandName} exec completed in {globalStopwatch.ElapsedMilliseconds}ms");
+            this.logger.LogDebug(
+                    "Command {CommandName} exec completed in {ElapsedMilliseconds}ms",
+                    command.CommandName,
+                    globalStopwatch.ElapsedMilliseconds);
         }
         finally
         {
             // wait 30 seconds for the post command events to finish execution, before finally killing the command
             command.CommandCompletedSemaphore.WaitOne(30000);
             this.commandParser.Release(command);
-            this.logger.Debug($"Command {command.CommandName} released.");
+            this.logger.LogDebug("Command {CommandName} released", command.CommandName);
         }
     }
 }
