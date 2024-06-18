@@ -3,7 +3,12 @@
 using System;
     
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-public class CommandInvocationAttribute(string commandName) : Attribute
+public class CommandInvocationAttribute : Attribute
 {
-    public string CommandName { get; } = commandName;
+    public CommandInvocationAttribute(string commandName)
+    {
+        this.CommandName = commandName;
+    }
+
+    public string CommandName { get; }
 }

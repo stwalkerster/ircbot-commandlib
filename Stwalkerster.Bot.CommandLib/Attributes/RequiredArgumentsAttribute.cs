@@ -2,7 +2,12 @@
 
 using System;
 [AttributeUsage(AttributeTargets.Method)]
-public class RequiredArgumentsAttribute(int requiredArguments) : Attribute
+public class RequiredArgumentsAttribute : Attribute
 {
-    public int RequiredArguments { get; } = requiredArguments;
+    public RequiredArgumentsAttribute(int requiredArguments)
+    {
+        this.RequiredArguments = requiredArguments;
+    }
+
+    public int RequiredArguments { get; }
 }

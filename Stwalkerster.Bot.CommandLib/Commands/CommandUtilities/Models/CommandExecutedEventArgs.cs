@@ -3,7 +3,12 @@ namespace Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
 using System;
 using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
 
-public class CommandExecutedEventArgs(ICommand command) : EventArgs
+public class CommandExecutedEventArgs : EventArgs
 {
-    public ICommand Command { get; } = command;
+    public CommandExecutedEventArgs(ICommand command)
+    {
+        this.Command = command;
+    }
+
+    public ICommand Command { get; }
 }

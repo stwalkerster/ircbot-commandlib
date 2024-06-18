@@ -3,7 +3,12 @@
 using System;
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-public class SubcommandInvocationAttribute(string commandName) : Attribute
+public class SubcommandInvocationAttribute : Attribute
 {
-    public string CommandName { get; } = commandName;
+    public SubcommandInvocationAttribute(string commandName)
+    {
+        this.CommandName = commandName;
+    }
+
+    public string CommandName { get; }
 }

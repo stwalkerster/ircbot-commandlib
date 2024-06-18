@@ -18,11 +18,11 @@ public static class TypedFactoryExtensions
         ILoggerFactory loggerFactory)
     {
         var logger = loggerFactory.CreateLogger(commandType);
-        
+
         return
             (ICommand)
             typeof(ICommandTypedFactory).GetMethod("Create")
                 .MakeGenericMethod(commandType)
-                .Invoke(factory, [commandSource, user, arguments, logger]);
+                .Invoke(factory, new object[] {commandSource, user, arguments, logger});
     }
 }

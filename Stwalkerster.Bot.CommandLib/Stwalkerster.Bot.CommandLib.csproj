@@ -11,7 +11,7 @@
         <PackageProjectUrl>https://github.com/stwalkerster/ircbot-commandlib</PackageProjectUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/stwalkerster/ircbot-commandlib</RepositoryUrl>
-        <LangVersion>12</LangVersion>
+        <LangVersion>10</LangVersion>
     </PropertyGroup>
     <ItemGroup>
       <PackageReference Include="Mono.Options" Version="6.12.0.148" />
