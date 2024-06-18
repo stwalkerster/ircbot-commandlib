@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
 using Stwalkerster.Bot.CommandLib.TypedFactories;
 using Stwalkerster.IrcClient.Model.Interfaces;
@@ -13,12 +14,15 @@ public static class TypedFactoryExtensions
         Type commandType,
         string commandSource,
         IUser user,
-        IList<string> arguments)
+        IList<string> arguments,
+        ILoggerFactory loggerFactory)
     {
+        var logger = loggerFactory.CreateLogger(commandType);
+        
         return
             (ICommand)
             typeof(ICommandTypedFactory).GetMethod("Create")
                 .MakeGenericMethod(commandType)
-                .Invoke(factory, [commandSource, user, arguments]);
+                .Invoke(factory, [commandSource, user, arguments, logger]);
     }
 }

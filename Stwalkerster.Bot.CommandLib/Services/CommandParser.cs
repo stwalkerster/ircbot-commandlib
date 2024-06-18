@@ -31,19 +31,22 @@ public class CommandParser : ICommandParser
     private readonly string commandTrigger;
     private readonly Dictionary<string, Dictionary<CommandRegistration, Type>> commands;
     private readonly ILogger<CommandParser> logger;
-    
+    private readonly ILoggerFactory loggerFactory;
+
     public CommandParser(
         IConfigurationProvider configProvider,
         ICommandTypedFactory commandFactory,
         ICoreParserService coreParserService,
-        ILogger<CommandParser> logger)
+        ILogger<CommandParser> logger,
+        ILoggerFactory loggerFactory)
     {
         this.commandTrigger = configProvider.CommandPrefix;
         this.configProvider = configProvider;
         this.commandFactory = commandFactory;
         this.coreParserService = coreParserService;
         this.logger = logger;
-        
+        this.loggerFactory = loggerFactory;
+
         var types = new List<Type>(); 
         this.commands = new Dictionary<string, Dictionary<CommandRegistration, Type>>();
         
@@ -141,7 +144,7 @@ public class CommandParser : ICommandParser
 
             try
             {
-                var command = this.commandFactory.CreateType(commandType, destination, user, arguments);
+                var command = this.commandFactory.CreateType(commandType, destination, user, arguments, this.loggerFactory);
 
                 if (command is CommandBase runnable)
                 {

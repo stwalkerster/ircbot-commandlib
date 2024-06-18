@@ -2,12 +2,12 @@ namespace Stwalkerster.Bot.CommandLib.Tests;
 
 using System;
 using System.Collections.Generic;
-using Castle.Core.Logging;
 using CommandLib.Commands.CommandUtilities;
 using CommandLib.Commands.CommandUtilities.Response;
 using CommandLib.Services.Interfaces;
 using IrcClient.Interfaces;
 using IrcClient.Model.Interfaces;
+using Microsoft.Extensions.Logging;
 
 public class CommandHarness : CommandBase
 {

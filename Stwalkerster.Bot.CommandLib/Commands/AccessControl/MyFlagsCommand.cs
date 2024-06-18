@@ -1,7 +1,7 @@
 ﻿namespace Stwalkerster.Bot.CommandLib.Commands.AccessControl;
 
 using System.Collections.Generic;
-using Castle.Core.Logging;
+using Microsoft.Extensions.Logging;
 using Stwalkerster.Bot.CommandLib.Attributes;
 using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
 using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;

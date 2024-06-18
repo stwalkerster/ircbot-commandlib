@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using NSubstitute;
     using NUnit.Framework;
     using Stwalkerster.Bot.CommandLib.Exceptions;

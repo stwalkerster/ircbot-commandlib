@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -60,6 +60,8 @@
             {
                 Message = "Ohai there " + this.User + " in " + this.CommandSource
             };
+            
+            this.Logger.LogWarning("Example warning");
         }
 
         [SubcommandInvocation("bye")]
