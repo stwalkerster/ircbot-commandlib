@@ -8,12 +8,14 @@
     using Castle.Services.Logging.Log4netIntegration;
     using Castle.Windsor;
     using Microsoft.Extensions.Logging;
+    using Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
     using Stwalkerster.Bot.CommandLib.Services;
     using Stwalkerster.Bot.CommandLib.TypedFactories;
     using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Interfaces;
+    using Utilities;
 
     public class Installer : IWindsorInstaller
     {
@@ -27,7 +29,7 @@
             container.AddFacility<TypedFactoryFacility>();
             
             string ns = "Stwalkerster.Bot.CommandLib.Testbot";
-
+            
             container.Register(
                 Classes.FromAssemblyContaining<CommandBase>().BasedOn<ICommand>().LifestyleTransient(),
                 Component.For<ICommandTypedFactory>().AsFactory(),
@@ -39,6 +41,7 @@
                 Component.For<ILogger<SupportHelper>>().UsingFactoryMethod(loggerFactory.CreateLogger<SupportHelper>),
                 Component.For<ILogger<CommandParser>>().UsingFactoryMethod(loggerFactory.CreateLogger<CommandParser>),
                 Component.For<ILogger<CommandHandler>>().UsingFactoryMethod(loggerFactory.CreateLogger<CommandHandler>),
+                Component.For<IFlagService>().ImplementedBy<BasicFlagService>().DependsOn(Dependency.OnValue<string>("*!*@wikimedia/stwalkerster")),
                 Classes.FromAssemblyContaining<Installer>().InNamespace(ns + ".Service").WithServiceAllInterfaces(),
                 Classes.FromAssemblyContaining<Installer>().BasedOn<ICommand>().LifestyleTransient(),
                 Component.For<ISupportHelper>().ImplementedBy<SupportHelper>(),
